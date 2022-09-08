@@ -1,5 +1,5 @@
 [package]
-name = "qiniu-sdk"
+name = "qiniu-sdk-ffi"
 version = "0.0.1"
 authors = ["Rong Zhou <zhourong@qiniu.com>", "Shanghai Qiniu Information Technologies Co., Ltd."]
 edition = "2021"
@@ -14,12 +14,16 @@ keywords = ["qiniu", "storage", "c++", "cxx", "cpp"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "qiniu_sdk"
+name = "qiniu_sdk_ffi"
 crate-type = ["staticlib"]
 
 [dependencies]
 cxx = "1.0"
-qiniu-sdk = { version = "0.2.1", path = "rust-sdk/sdk", default-features = false, features = ["utils", "etag", "credential", "upload-token", "http", "http-client", "objects", "upload", "download", "isahc", "trust_dns", "async"] }
+qiniu-sdk = { version = "0.2.1", path = "rust-sdk/sdk", default-features = false, features = ["utils", "etag", "credential", "upload-token", "http", "http-client", "objects", "upload", "download", "ureq"] }
 
 [build-dependencies]
 cxx-build = "1.0"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1

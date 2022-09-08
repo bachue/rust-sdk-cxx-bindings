@@ -1,0 +1,94 @@
+name: Rust SDK C++ Bindings CI
+on:
+  push:
+  pull_request:
+jobs:
+  linux:
+    name: CI Test On Linux
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.19.x'
+      - name: Install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: '1.60.0'
+          default: true
+          override: true
+      - name: Install dependencies
+        run: |
+          sudo apt install -yqq build-essential
+      - name: Build
+        run: |
+          set -e
+          cmake -S . -B build
+          cmake --build build
+      - name: Unit test
+        working-directory: '${{ github.workspace }}/build/gtests'
+        run: |
+          ./qiniu_sdk_test
+  macos:
+    name: CI Test On macOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.12
+        with:
+          cmake-version: '3.19.x'
+      - name: Install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: '1.60.0'
+          default: true
+          override: true
+      - name: Build
+        run: |
+          set -e
+          cmake -S . -B build
+          cmake --build build
+      - name: Unit test
+        working-directory: '${{ github.workspace }}/build/gtests'
+        run: |
+          ./qiniu_sdk_test
+  windows:
+    name: CI Test On Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Install Rust stable
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: '1.60.0'
+          default: true
+          override: true
+      - name: Install Visual Studio Dev cmds
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install CMake
+        uses: lukka/get-cmake@latest
+      - name: Build
+        run: |
+          set -e
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=RELEASE
+          cmake --build build --config Release
+        shell: bash
+      - name: Unit test
+        run: |
+          ./build/Release/qiniu_sdk_test.exe
+        shell: bash
+
