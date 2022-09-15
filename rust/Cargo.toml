@@ -23,6 +23,7 @@ qiniu-sdk = { version = "0.2.1", path = "rust-sdk/sdk", default-features = false
 
 [build-dependencies]
 cxx-build = "1.0"
+walkdir = "2.3.2"
 
 [profile.release]
 lto = "fat"

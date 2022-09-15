@@ -19,7 +19,7 @@ ENABLE_TESTING()
 
 INCLUDE_DIRECTORIES(..)
 ADD_EXECUTABLE(qiniu_sdk_test ${DIR_SRCS_TEST})
-TARGET_LINK_LIBRARIES(qiniu_sdk_test PRIVATE GTest::gtest_main PUBLIC qiniu_sdk_static)
+TARGET_LINK_LIBRARIES(qiniu_sdk_test PRIVATE GTest::gtest_main PRIVATE qiniu_sdk_dynamic)
 
 INCLUDE(GoogleTest)
 GTEST_DISCOVER_TESTS(qiniu_sdk_test)

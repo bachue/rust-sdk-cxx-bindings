@@ -32,7 +32,7 @@ ENDIF()
 
 SET(cargo_target_dir "${CMAKE_BINARY_DIR}/${rust_sdk_ffi_build_dir}/cargo/build")
 
-INCLUDE_DIRECTORIES(includes ${cargo_target_dir}/${Rust_CARGO_TARGET_CACHED}/cxxbridge)
+INCLUDE_DIRECTORIES(. rust ${cargo_target_dir}/${Rust_CARGO_TARGET_CACHED}/cxxbridge)
 AUX_SOURCE_DIRECTORY(cpp CPP_SRCS)
 
 ADD_LIBRARY(${PROJECT_NAME}_static STATIC ${CPP_SRCS})
