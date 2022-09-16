@@ -89,6 +89,6 @@ jobs:
         shell: bash
       - name: Unit test
         run: |
-          ./build/Release/qiniu_sdk_test.exe
+          ./build/gtests/Release/qiniu_sdk_test.exe
         shell: bash
 

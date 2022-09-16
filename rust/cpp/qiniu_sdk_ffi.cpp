@@ -1,47 +1,49 @@
 #include "includes/qiniu_sdk_ffi.h"
-#include "rust/cxx.h"
 #include <memory>
 #include <iostream>
 
 static inline uint8_t get_errbit(std::istream *stream);
 
-namespace qiniu_sdk_ffi::rust
+namespace qiniu_sdk_ffi
 {
-    size_t SeekableReader::read(uint8_t *data, size_t size, uint8_t *errbit) const
+    namespace rust
     {
-        this->stream->read(static_cast<char *>(static_cast<void *>(data)), size);
-        *errbit = get_errbit(this->stream);
-        this->stream->clear();
-        return this->stream->gcount();
-    }
-
-    uint64_t SeekableReader::seek(int64_t off, uint8_t pos, uint8_t *errbit) const
-    {
-        std::ios_base::seekdir dir;
-        switch (pos)
+        size_t SeekableReader::read(uint8_t *data, size_t size, uint8_t *errbit) const
         {
-        case 0:
-            dir = std::ios_base::beg;
-            break;
-        case 1:
-            dir = std::ios_base::cur;
-            break;
-        case 2:
-            dir = std::ios_base::end;
-            break;
-        default:
-            throw std::runtime_error("invalid pos");
+            this->stream->read(static_cast<char *>(static_cast<void *>(data)), size);
+            *errbit = get_errbit(this->stream);
+            this->stream->clear();
+            return this->stream->gcount();
         }
-        this->stream->seekg(off, dir);
-        *errbit = get_errbit(this->stream);
-        this->stream->clear();
-        return this->stream->tellg();
-    }
 
-    std::unique_ptr<SeekableReader> new_seekable_reader(void *ptr)
-    {
-        std::istream *stream = static_cast<std::istream *>(ptr);
-        return std::unique_ptr<SeekableReader>(new SeekableReader(stream));
+        uint64_t SeekableReader::seek(int64_t off, uint8_t pos, uint8_t *errbit) const
+        {
+            std::ios_base::seekdir dir;
+            switch (pos)
+            {
+            case 0:
+                dir = std::ios_base::beg;
+                break;
+            case 1:
+                dir = std::ios_base::cur;
+                break;
+            case 2:
+                dir = std::ios_base::end;
+                break;
+            default:
+                throw std::runtime_error("invalid pos");
+            }
+            this->stream->seekg(off, dir);
+            *errbit = get_errbit(this->stream);
+            this->stream->clear();
+            return this->stream->tellg();
+        }
+
+        std::unique_ptr<SeekableReader> new_seekable_reader(void *ptr)
+        {
+            std::istream *stream = static_cast<std::istream *>(ptr);
+            return std::unique_ptr<SeekableReader>(new SeekableReader(stream));
+        }
     }
 }
 

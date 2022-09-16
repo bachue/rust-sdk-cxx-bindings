@@ -41,7 +41,7 @@ ADD_LIBRARY(${PROJECT_NAME}_dynamic SHARED ${CPP_SRCS})
 SET(OTHER_DEPS)
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  SET(OTHER_DEPS PRIVATE "-framework Security")
+  SET(OTHER_DEPS PRIVATE "-framework Security -framework CoreFoundation")
 ENDIF()
 
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}_static PRIVATE qiniu_sdk_ffi ${OTHER_DEPS})
