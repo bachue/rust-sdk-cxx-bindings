@@ -7,7 +7,7 @@
 
 namespace qiniu_sdk
 {
-    void initialize();
+    int initialize();
 
     namespace credential
     {
@@ -25,6 +25,8 @@ namespace qiniu_sdk
             ::rust::Box<::qiniu_sdk_ffi::rust::Credential> credential;
         };
     }
+
+    static int _ = initialize();
 }
 
 #endif // ___QINIU_SDK_DEFINED
