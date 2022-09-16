@@ -5,24 +5,28 @@
 #ifndef ___QINIU_SDK_FFI_DEFINED
 #define ___QINIU_SDK_FFI_DEFINED
 
-namespace qiniu_sdk_ffi
+namespace qiniu_sdk
 {
-    namespace rust
+    namespace _internal
     {
-        using c_void = void;
-
-        class SeekableReader
+        namespace rust_sdk_ffi
         {
-        public:
-            SeekableReader() = delete;
-            SeekableReader(std::basic_istream<char> *s) : stream(s) {}
-            size_t read(uint8_t *data, size_t size, uint8_t *errbit) const;
-            uint64_t seek(int64_t off, uint8_t pos, uint8_t *errbit) const;
 
-        private:
-            std::basic_istream<char> *stream;
-        };
-        std::unique_ptr<SeekableReader> new_seekable_reader(void *ptr);
+            using c_void = void;
+
+            class SeekableReader
+            {
+            public:
+                SeekableReader() = delete;
+                SeekableReader(std::basic_istream<char> *s) : stream(s) {}
+                size_t read(uint8_t *data, size_t size, uint8_t *errbit) const;
+                uint64_t seek(int64_t off, uint8_t pos, uint8_t *errbit) const;
+
+            private:
+                std::basic_istream<char> *stream;
+            };
+            std::unique_ptr<SeekableReader> new_seekable_reader(void *ptr);
+        }
     }
 }
 
