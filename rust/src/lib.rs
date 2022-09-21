@@ -3,6 +3,12 @@ mod utils;
 mod initialize;
 pub use initialize::initialize_user_agent;
 
+mod etag;
+pub use etag::{
+    etag_of, etag_to_buf, etag_v1_finalize_to_buf, etag_v1_reset, etag_v1_update, new_etag_v1,
+    EtagV1,
+};
+
 mod credential;
 pub use credential::{
     chain_credentials_provider_builder_append_credential, chain_credentials_provider_builder_build,
@@ -25,6 +31,17 @@ pub use credential::{
 mod ffi {
     extern "Rust" {
         fn initialize_user_agent(cxx_compiler_info: &str);
+
+        // mod etag
+
+        unsafe fn etag_of(stream: *mut c_void) -> Result<String>;
+        unsafe fn etag_to_buf(stream: *mut c_void, buf: *mut c_void) -> Result<()>;
+
+        type EtagV1;
+        fn new_etag_v1() -> Box<EtagV1>;
+        fn etag_v1_update(etag: &mut EtagV1, data: &[u8]);
+        unsafe fn etag_v1_finalize_to_buf(etag: &mut EtagV1, buf: *mut c_void) -> Result<()>;
+        fn etag_v1_reset(etag: &mut EtagV1);
 
         // mod credential
 

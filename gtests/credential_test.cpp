@@ -3,7 +3,7 @@
 #include <fstream>
 #include <sstream>
 
-class QiniuSDKTest : public ::testing::Test
+class CredentialTest : public ::testing::Test
 {
 protected:
     void TearDown() override
@@ -13,7 +13,7 @@ protected:
     }
 };
 
-TEST_F(QiniuSDKTest, CredentialTest)
+TEST_F(CredentialTest, CredentialTest)
 {
     qiniu_sdk::credential::Credential credential("abcdefghklmnopq", "1234567890");
 
@@ -27,10 +27,9 @@ TEST_F(QiniuSDKTest, CredentialTest)
     }
 
     {
-        const uint8_t data[] = "hello";
-        const size_t data_len = sizeof(data) / sizeof(uint8_t) - 1;
-        EXPECT_EQ(credential.sign(&data[0], data_len), "abcdefghklmnopq:b84KVc-LroDiz0ebUANfdzSRxa0=");
-        EXPECT_EQ(credential.sign_with_data(&data[0], data_len), "abcdefghklmnopq:BZYt5uVRy1RVt5ZTXbaIt2ROVMA=:aGVsbG8=");
+        const char *data = "hello";
+        EXPECT_EQ(credential.sign(data, strlen(data)), "abcdefghklmnopq:b84KVc-LroDiz0ebUANfdzSRxa0=");
+        EXPECT_EQ(credential.sign_with_data(data, strlen(data)), "abcdefghklmnopq:BZYt5uVRy1RVt5ZTXbaIt2ROVMA=:aGVsbG8=");
     }
 
     {
@@ -45,9 +44,8 @@ TEST_F(QiniuSDKTest, CredentialTest)
     }
 
     {
-        const uint8_t data[] = "name=test&language=go";
-        const size_t data_len = sizeof(data) / sizeof(uint8_t) - 1;
-        auto authorization = credential.authorization_v1_for_request("http://upload.qiniup.com/", "application/x-www-form-urlencoded", data, data_len);
+        const char *data = "name=test&language=go";
+        auto authorization = credential.authorization_v1_for_request("http://upload.qiniup.com/", "application/x-www-form-urlencoded", data, strlen(data));
         EXPECT_EQ(authorization, "QBox abcdefghklmnopq:VlWNSauF13XCI1YGoeGMUC229lI=");
     }
 
@@ -63,7 +61,7 @@ TEST_F(QiniuSDKTest, CredentialTest)
     }
 }
 
-TEST_F(QiniuSDKTest, GlobalCredentialProviderTest)
+TEST_F(CredentialTest, GlobalCredentialProviderTest)
 {
     qiniu_sdk::credential::Credential credential("global_ak", "global_sk");
     qiniu_sdk::credential::GlobalCredentialProvider::setup(credential);
@@ -73,7 +71,7 @@ TEST_F(QiniuSDKTest, GlobalCredentialProviderTest)
     EXPECT_EQ("global_sk", c.get_secret_key());
 }
 
-TEST_F(QiniuSDKTest, EnvCredentialProviderTest)
+TEST_F(CredentialTest, EnvCredentialProviderTest)
 {
     qiniu_sdk::credential::Credential credential("env_ak", "env_sk");
     qiniu_sdk::credential::EnvCredentialProvider::setup(credential);
@@ -83,7 +81,7 @@ TEST_F(QiniuSDKTest, EnvCredentialProviderTest)
     EXPECT_EQ("env_sk", c.get_secret_key());
 }
 
-TEST_F(QiniuSDKTest, ChainCredentialsProviderTest)
+TEST_F(CredentialTest, ChainCredentialsProviderTest)
 {
     qiniu_sdk::credential::GlobalCredentialProvider gcp;
     qiniu_sdk::credential::EnvCredentialProvider ecp;

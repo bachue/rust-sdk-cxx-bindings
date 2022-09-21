@@ -17,6 +17,60 @@ namespace qiniu_sdk
         int initialize();
     }
 
+    /// @brief  Etag 名字空间
+    namespace etag
+    {
+        const size_t ETAG_SIZE = 28;
+        /// @brief 读取 reader 中的数据并计算它的 Etag V1，生成结果
+        /// @param data_reader 数据的输入流
+        /// @return 生成的 Etag V1
+        std::string etag_of(std::istream *data_reader);
+
+        /// @brief 读取 reader 中的数据并计算它的 Etag V1，生成结果到指定的缓冲中，缓冲区至少保证有 28 个字节
+        /// @param data_reader 数据的输入流
+        /// @param buf 缓冲区地址，至少有 28 个字节可用
+        void etag_to_buf(std::istream *data_reader, char *buf);
+
+        /// @brief  Etag 计算器抽象类
+        class Etag
+        {
+        public:
+            /// @brief 向 Etag 计算器写入数据
+            /// @param data 要计算的数据地址
+            /// @param length 要计算的数据长度，单位为字节
+            virtual void update(const char *data, size_t length) noexcept = 0;
+
+            /// @brief 生成结果到指定的缓冲中，缓冲区至少保证有 28 个字节。生成结果后计算器将重置
+            /// @param buf 缓冲区地址，至少有 28 个字节可用
+            virtual void finalize(char *buf) noexcept = 0;
+
+            /// @brief 重置计算器
+            virtual void reset() noexcept = 0;
+        };
+
+        class EtagV1 final : public Etag
+        {
+        public:
+            EtagV1() noexcept;
+            EtagV1(const EtagV1 &) = delete;
+            EtagV1(EtagV1 &&) noexcept;
+            /// @brief 向 Etag 计算器写入数据
+            /// @param data 要计算的数据地址
+            /// @param length 要计算的数据长度，单位为字节
+            virtual void update(const char *data, size_t length) noexcept override;
+
+            /// @brief 生成结果到指定的缓冲中，缓冲区至少保证有 28 个字节。生成结果后计算器将重置
+            /// @param buf 缓冲区地址，至少有 28 个字节可用
+            virtual void finalize(char *buf) noexcept override;
+
+            /// @brief 重置计算器
+            virtual void reset() noexcept override;
+
+        private:
+            rust::Box<_internal::rust_sdk_ffi::EtagV1> inner;
+        };
+    }
+
     /// @brief  七牛认证信息名字空间
     namespace credential
     {
@@ -57,14 +111,14 @@ namespace qiniu_sdk
             /// @param data 要签名的数据地址
             /// @param length 要签名的数据长度，单位为字节
             /// @return 签名
-            std::string sign(const uint8_t *data, size_t length) const;
+            std::string sign(const char *data, size_t length) const;
 
             /// @brief 使用七牛签名算法对数据进行签名，并同时给出签名和原数据
             /// @details 参考[管理凭证的签名算法文档](https://developer.qiniu.com/kodo/manual/1201/access-token)
             /// @param data 要签名的数据地址
             /// @param length 要签名的数据长度，单位为字节
             /// @return 签名及原数据
-            std::string sign_with_data(const uint8_t *data, size_t length) const;
+            std::string sign_with_data(const char *data, size_t length) const;
 
             /// @brief 使用七牛签名算法对输入流数据进行签名
             /// @details 参考[管理凭证的签名算法文档](https://developer.qiniu.com/kodo/manual/1201/access-token)
@@ -78,7 +132,7 @@ namespace qiniu_sdk
             /// @param body 请求 Body 的地址
             /// @param body_size 请求 Body 的长度，单位为字节
             /// @return Authorization 的值
-            std::string authorization_v1_for_request(const std::string &url, const std::string &content_type, const uint8_t *body, size_t body_size) const;
+            std::string authorization_v1_for_request(const std::string &url, const std::string &content_type, const char *body, size_t body_size) const;
 
             /// @brief 使用七牛签名算法 V1 对 HTTP 请求（请求体为输入流）进行签名，返回 Authorization 的值
             /// @param url 请求的 URL
@@ -94,7 +148,7 @@ namespace qiniu_sdk
             /// @param body 请求 Body 的地址
             /// @param body_size 请求 Body 的长度，单位为字节
             /// @return Authorization 的值
-            std::string authorization_v2_for_request(const std::string &method, const std::string &url, const std::map<std::string, std::string> &headers, const uint8_t *body, size_t body_size) const;
+            std::string authorization_v2_for_request(const std::string &method, const std::string &url, const std::map<std::string, std::string> &headers, const char *body, size_t body_size) const;
 
             /// @brief  使用七牛签名算法 V2 对 HTTP 请求（请求体为输入流）进行签名，返回 Authorization 的值
             /// @param method HTTP 请求方法

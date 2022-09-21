@@ -46,15 +46,15 @@ namespace qiniu_sdk
             return std::string(_internal::rust_sdk_ffi::credential_get_secret_key(*this->inner));
         }
 
-        std::string Credential::sign(const uint8_t *data, size_t len) const
+        std::string Credential::sign(const char *data, size_t len) const
         {
-            auto data_slice = rust::Slice<const uint8_t>(data, len);
+            auto data_slice = rust::Slice<const uint8_t>(reinterpret_cast<const uint8_t *>(data), len);
             return std::string(_internal::rust_sdk_ffi::credential_sign(*this->inner, data_slice));
         }
 
-        std::string Credential::sign_with_data(const uint8_t *data, size_t len) const
+        std::string Credential::sign_with_data(const char *data, size_t len) const
         {
-            auto data_slice = rust::Slice<const uint8_t>(data, len);
+            auto data_slice = rust::Slice<const uint8_t>(reinterpret_cast<const uint8_t *>(data), len);
             return std::string(_internal::rust_sdk_ffi::credential_sign_with_data(*this->inner, data_slice));
         }
 
@@ -63,11 +63,11 @@ namespace qiniu_sdk
             return std::string(_internal::rust_sdk_ffi::credential_sign_reader(*this->inner, static_cast<void *>(stream)));
         }
 
-        std::string Credential::authorization_v1_for_request(const std::string &url, const std::string &content_type, const uint8_t *body, size_t body_size) const
+        std::string Credential::authorization_v1_for_request(const std::string &url, const std::string &content_type, const char *body, size_t body_size) const
         {
             auto url_str = rust::Str(url);
             auto content_type_str = rust::Str(content_type);
-            auto body_slice = rust::Slice<const uint8_t>(body, body_size);
+            auto body_slice = rust::Slice<const uint8_t>(reinterpret_cast<const uint8_t *>(body), body_size);
             return std::string(_internal::rust_sdk_ffi::credential_authorization_v1_for_request(*this->inner, url_str, content_type_str, body_slice));
         }
 
@@ -78,13 +78,13 @@ namespace qiniu_sdk
             return std::string(_internal::rust_sdk_ffi::credential_authorization_v1_for_request_with_body_reader(*this->inner, url_str, content_type_str, static_cast<void *>(stream)));
         }
 
-        std::string Credential::authorization_v2_for_request(const std::string &method, const std::string &url, const std::map<std::string, std::string> &headers, const uint8_t *body, size_t body_size) const
+        std::string Credential::authorization_v2_for_request(const std::string &method, const std::string &url, const std::map<std::string, std::string> &headers, const char *body, size_t body_size) const
         {
             auto url_str = rust::Str(url);
             auto method_str = rust::Str(method);
             auto header_vec = convert_headers(headers);
             auto header_slice = rust::Slice<const ::std::array<rust::Str, 2>>(&header_vec[0], header_vec.size());
-            auto body_slice = rust::Slice<const uint8_t>(body, body_size);
+            auto body_slice = rust::Slice<const uint8_t>(reinterpret_cast<const uint8_t *>(body), body_size);
             return std::string(_internal::rust_sdk_ffi::credential_authorization_v2_for_request(*this->inner, method_str, url_str, header_slice, body_slice));
         }
 
