@@ -1,6 +1,5 @@
 #include <istream>
 #include <memory>
-#include "rust/cxx.h"
 
 #ifndef ___QINIU_SDK_FFI_DEFINED
 #define ___QINIU_SDK_FFI_DEFINED

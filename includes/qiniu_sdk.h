@@ -1,7 +1,7 @@
 #include <string>
 #include <map>
 #include <chrono>
-#include "rust/cxx.h"
+#include <vector>
 #include "qiniu-sdk-ffi/src/lib.rs.h"
 
 #ifndef ___QINIU_SDK_DEFINED
@@ -76,7 +76,6 @@ namespace qiniu_sdk
     {
         class GotCredential;
         class CredentialProvider;
-        class GlobalCredentialProvider;
 
         /// @brief 认证信息
         /// @details 返回认证信息的 AccessKey 和 SecretKey
@@ -295,6 +294,99 @@ namespace qiniu_sdk
             /// @brief 构造认证信息串提供者
             /// @param builder 串联认证信息构建器
             ChainCredentialsProvider(ChainCredentialsProviderBuilder &builder) noexcept;
+        };
+    }
+
+    namespace upload_token
+    {
+        class UploadPolicy;
+
+        const uint8_t STANDARD = 1;
+        const uint8_t INFREQUENT_ACCESS = 2;
+        const uint8_t ARCHIVE = 3;
+        const uint8_t DEEP_ARCHIVE = 4;
+
+        class UploadPolicyBuilder final
+        {
+        public:
+            UploadPolicyBuilder() = delete;
+            UploadPolicyBuilder(const UploadPolicyBuilder &) noexcept;
+            /// @private
+            UploadPolicyBuilder(rust::Box<_internal::rust_sdk_ffi::UploadPolicyBuilder> &&builder) noexcept;
+            /// @private
+            const _internal::rust_sdk_ffi::UploadPolicyBuilder &operator*() const noexcept;
+            /// @private
+            _internal::rust_sdk_ffi::UploadPolicyBuilder &operator*() noexcept;
+            static UploadPolicyBuilder new_for_bucket(const std::string &bucket, const std::chrono::nanoseconds &lifetime) noexcept;
+            static UploadPolicyBuilder new_for_object(const std::string &bucket, const std::string &object, const std::chrono::nanoseconds &lifetime) noexcept;
+            static UploadPolicyBuilder new_for_objects_with_prefix(const std::string &bucket, const std::string &prefix, const std::chrono::nanoseconds &lifetime) noexcept;
+            UploadPolicyBuilder &token_lifetime(const std::chrono::nanoseconds &lifetime) noexcept;
+            UploadPolicyBuilder &token_deadline(const std::chrono::nanoseconds &time_since_epoch) noexcept;
+            UploadPolicyBuilder &insert_only() noexcept;
+            UploadPolicyBuilder &enable_mime_detection() noexcept;
+            UploadPolicyBuilder &disable_mime_detection() noexcept;
+            UploadPolicyBuilder &file_type(uint8_t file_type) noexcept;
+            UploadPolicyBuilder &return_url(const std::string &url) noexcept;
+            UploadPolicyBuilder &return_body(const std::string &body) noexcept;
+            UploadPolicyBuilder &callback(const std::string *urls, const size_t urls_count, const std::string &host = "", const std::string &body = "", const std::string &body_type = "") noexcept;
+            UploadPolicyBuilder &save_as(const std::string &save_as, bool force = false) noexcept;
+            UploadPolicyBuilder &file_size_limitation(uint64_t min_file_size = 0, uint64_t max_file_size = 0) noexcept;
+            UploadPolicyBuilder &mime_types(const std::string *mime_types, const size_t mime_types_count) noexcept;
+            UploadPolicyBuilder &object_lifetime(const std::chrono::nanoseconds &lifetime) noexcept;
+            UploadPolicyBuilder &set_as_string(const std::string &key, const std::string &value) noexcept;
+            UploadPolicyBuilder &set_as_integer(const std::string &key, int64_t value) noexcept;
+            UploadPolicyBuilder &set_as_bool(const std::string &key, bool value) noexcept;
+            UploadPolicyBuilder &unset(const std::string &key) noexcept;
+            UploadPolicyBuilder &reset() noexcept;
+            UploadPolicy build() const noexcept;
+
+        private:
+            rust::Box<_internal::rust_sdk_ffi::UploadPolicyBuilder> inner;
+        };
+
+        class UploadPolicy final
+        {
+        public:
+            UploadPolicy() = delete;
+            UploadPolicy(const UploadPolicy &) noexcept;
+            UploadPolicy(const UploadPolicyBuilder &) noexcept;
+            /// @private
+            UploadPolicy(rust::Box<_internal::rust_sdk_ffi::UploadPolicy> &&builder) noexcept;
+            static UploadPolicy from_json(const std::string &json);
+            /// @private
+            const _internal::rust_sdk_ffi::UploadPolicy &operator*() const noexcept;
+            /// @private
+            _internal::rust_sdk_ffi::UploadPolicy &operator*() noexcept;
+            std::string bucket() const noexcept;
+            std::string key() const noexcept;
+            bool has_prefixal_object_key() const noexcept;
+            bool is_insert_only() const noexcept;
+            bool is_mime_detection_enabled() const noexcept;
+            std::chrono::nanoseconds token_deadline() const;
+            std::string return_url() const noexcept;
+            std::string return_body() const noexcept;
+            std::vector<std::string> callback_urls() const noexcept;
+            std::string callback_host() const noexcept;
+            std::string callback_body() const noexcept;
+            std::string callback_body_type() const noexcept;
+            std::string save_key() const noexcept;
+            bool is_save_key_forced() const noexcept;
+            uint64_t max_file_size() const noexcept;
+            uint64_t min_file_size() const noexcept;
+            std::vector<std::string> mime_types() const noexcept;
+            uint8_t file_type() const noexcept;
+            std::chrono::nanoseconds object_lifetime() const noexcept;
+            std::string to_json() const noexcept;
+            bool has_key(const std::string &key) const noexcept;
+            std::string get_as_string(const std::string &key) const noexcept;
+            int64_t get_as_integer(const std::string &key) const noexcept;
+            bool get_as_bool(const std::string &key) const noexcept;
+            bool is_string(const std::string &key) const noexcept;
+            bool is_integer(const std::string &key) const noexcept;
+            bool is_bool(const std::string &key) const noexcept;
+
+        private:
+            rust::Box<_internal::rust_sdk_ffi::UploadPolicy> inner;
         };
     }
 

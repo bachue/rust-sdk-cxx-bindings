@@ -6,10 +6,13 @@
 
 namespace qiniu_sdk
 {
-    namespace credential
+    namespace utils
     {
         std::vector<std::array<rust::Str, 2>> convert_headers(const std::map<std::string, std::string> &) noexcept;
+    }
 
+    namespace credential
+    {
         Credential::Credential(const std::string &access_key, const std::string &secret_key) noexcept : inner(_internal::rust_sdk_ffi::new_credential(rust::Str(access_key), rust::Str(secret_key)))
         {
         }
@@ -82,7 +85,7 @@ namespace qiniu_sdk
         {
             auto url_str = rust::Str(url);
             auto method_str = rust::Str(method);
-            auto header_vec = convert_headers(headers);
+            auto header_vec = utils::convert_headers(headers);
             auto header_slice = rust::Slice<const ::std::array<rust::Str, 2>>(&header_vec[0], header_vec.size());
             auto body_slice = rust::Slice<const uint8_t>(reinterpret_cast<const uint8_t *>(body), body_size);
             return std::string(_internal::rust_sdk_ffi::credential_authorization_v2_for_request(*this->inner, method_str, url_str, header_slice, body_slice));
@@ -92,7 +95,7 @@ namespace qiniu_sdk
         {
             auto url_str = rust::Str(url);
             auto method_str = rust::Str(method);
-            auto header_vec = convert_headers(headers);
+            auto header_vec = utils::convert_headers(headers);
             auto header_slice = rust::Slice<const ::std::array<rust::Str, 2>>(&header_vec[0], header_vec.size());
             return std::string(_internal::rust_sdk_ffi::credential_authorization_v2_for_request_with_body_reader(*this->inner, method_str, url_str, header_slice, static_cast<void *>(stream)));
         }
