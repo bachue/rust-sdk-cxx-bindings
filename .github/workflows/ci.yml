@@ -33,7 +33,7 @@ jobs:
       - name: Unit test
         working-directory: '${{ github.workspace }}/build/gtests'
         run: |
-          ./qiniu_sdk_test
+          ./qiniu_bindings_test
   macos:
     name: CI Test On macOS
     runs-on: macos-latest
@@ -64,7 +64,7 @@ jobs:
       - name: Unit test
         working-directory: '${{ github.workspace }}/build/gtests'
         run: |
-          ./qiniu_sdk_test
+          ./qiniu_bindings_test
   windows:
     name: CI Test On Windows
     runs-on: windows-latest
@@ -96,6 +96,6 @@ jobs:
         shell: bash
       - name: Unit test
         run: |
-          ./build/gtests/Release/qiniu_sdk_test.exe
+          ./build/gtests/Release/qiniu_bindings_test.exe
         shell: bash
 

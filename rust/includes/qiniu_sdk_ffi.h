@@ -4,7 +4,7 @@
 #ifndef ___QINIU_SDK_FFI_DEFINED
 #define ___QINIU_SDK_FFI_DEFINED
 
-namespace qiniu_sdk
+namespace qiniu_bindings
 {
     namespace _internal
     {

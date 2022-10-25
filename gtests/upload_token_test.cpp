@@ -1,12 +1,12 @@
 #include "gtest/gtest.h"
-#include "includes/qiniu_sdk.h"
+#include "includes/qiniu_bindings.h"
 #include <chrono>
 #include <array>
 
 TEST(UploadTokenTest, UploadPolicyTest)
 {
     {
-        auto builder = qiniu_sdk::upload_token::UploadPolicyBuilder::new_for_bucket("test-bucket", std::chrono::hours(1));
+        auto builder = qiniu_bindings::upload_token::UploadPolicyBuilder::new_for_bucket("test-bucket", std::chrono::hours(1));
         auto policy = builder.build();
         EXPECT_EQ(policy.bucket(), "test-bucket");
         EXPECT_EQ(policy.key(), "");
@@ -19,8 +19,8 @@ TEST(UploadTokenTest, UploadPolicyTest)
     }
 
     {
-        auto builder = qiniu_sdk::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
-        builder.insert_only().enable_mime_detection().file_type(qiniu_sdk::upload_token::INFREQUENT_ACCESS);
+        auto builder = qiniu_bindings::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
+        builder.insert_only().enable_mime_detection().file_type(qiniu_bindings::upload_token::INFREQUENT_ACCESS);
         auto policy = builder.build();
         EXPECT_EQ(policy.bucket(), "test-bucket");
         EXPECT_EQ(policy.key(), "test-key");
@@ -30,8 +30,8 @@ TEST(UploadTokenTest, UploadPolicyTest)
         EXPECT_EQ(policy.get_as_integer("insertOnly"), 1);
         EXPECT_TRUE(policy.is_mime_detection_enabled());
         EXPECT_EQ(policy.get_as_integer("detectMime"), 1);
-        EXPECT_EQ(policy.file_type(), qiniu_sdk::upload_token::INFREQUENT_ACCESS);
-        EXPECT_EQ(policy.get_as_integer("fileType"), qiniu_sdk::upload_token::INFREQUENT_ACCESS);
+        EXPECT_EQ(policy.file_type(), qiniu_bindings::upload_token::INFREQUENT_ACCESS);
+        EXPECT_EQ(policy.get_as_integer("fileType"), qiniu_bindings::upload_token::INFREQUENT_ACCESS);
 
         auto deadline = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>(policy.token_deadline());
         auto now = std::chrono::system_clock::now();
@@ -40,7 +40,7 @@ TEST(UploadTokenTest, UploadPolicyTest)
     }
 
     {
-        auto builder = qiniu_sdk::upload_token::UploadPolicyBuilder::new_for_objects_with_prefix("test-bucket", "test-key", std::chrono::hours(1));
+        auto builder = qiniu_bindings::upload_token::UploadPolicyBuilder::new_for_objects_with_prefix("test-bucket", "test-key", std::chrono::hours(1));
         auto policy = builder.build();
         EXPECT_EQ(policy.bucket(), "test-bucket");
         EXPECT_EQ(policy.key(), "test-key");
@@ -54,7 +54,7 @@ TEST(UploadTokenTest, UploadPolicyTest)
     }
 
     {
-        auto builder = qiniu_sdk::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
+        auto builder = qiniu_bindings::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
         builder.return_url("http://return.qiniu.com").return_body("name=$(fname)&size=$(fsize)");
         auto policy = builder.build();
         EXPECT_EQ(policy.bucket(), "test-bucket");
@@ -64,7 +64,7 @@ TEST(UploadTokenTest, UploadPolicyTest)
     }
 
     {
-        auto builder = qiniu_sdk::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
+        auto builder = qiniu_bindings::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
         std::array<std::string, 2> urls{"http://callback1.qiniu.com", "http://callback2.qiniu.com"};
         builder.callback(urls.data(), urls.size(), "callback.qiniu.com", "name=$(fname)&size=$(fsize)", "application/x-www-form-urlencoded");
         auto policy = builder.build();
@@ -78,7 +78,7 @@ TEST(UploadTokenTest, UploadPolicyTest)
     }
 
     {
-        auto builder = qiniu_sdk::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
+        auto builder = qiniu_bindings::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
         std::array<std::string, 3> mime_types{"application/x-www-form-urlencoded", "application/json", "application/csv"};
         builder.mime_types(mime_types.data(), mime_types.size());
         auto policy = builder.build();
@@ -90,7 +90,7 @@ TEST(UploadTokenTest, UploadPolicyTest)
     }
 
     {
-        auto builder = qiniu_sdk::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
+        auto builder = qiniu_bindings::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
         builder.set_as_string("testString", "stringValue").set_as_integer("testNumber", 1).set_as_bool("testBoolean", true);
         auto policy = builder.build();
         EXPECT_EQ(policy.bucket(), "test-bucket");

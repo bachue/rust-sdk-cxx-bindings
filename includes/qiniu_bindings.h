@@ -8,7 +8,7 @@
 #define ___QINIU_SDK_DEFINED
 
 /// @brief  七牛 SDK 名字空间
-namespace qiniu_sdk
+namespace qiniu_bindings
 {
     /// @private
     namespace _internal

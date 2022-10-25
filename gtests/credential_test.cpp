@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "includes/qiniu_sdk.h"
+#include "includes/qiniu_bindings.h"
 #include <fstream>
 #include <sstream>
 
@@ -8,20 +8,20 @@ class CredentialTest : public ::testing::Test
 protected:
     void TearDown() override
     {
-        qiniu_sdk::credential::GlobalCredentialProvider::clear();
-        qiniu_sdk::credential::EnvCredentialProvider::clear();
+        qiniu_bindings::credential::GlobalCredentialProvider::clear();
+        qiniu_bindings::credential::EnvCredentialProvider::clear();
     }
 };
 
 TEST_F(CredentialTest, CredentialTest)
 {
-    qiniu_sdk::credential::Credential credential("abcdefghklmnopq", "1234567890");
+    qiniu_bindings::credential::Credential credential("abcdefghklmnopq", "1234567890");
 
     EXPECT_EQ("abcdefghklmnopq", credential.get_access_key());
     EXPECT_EQ("1234567890", credential.get_secret_key());
 
     {
-        qiniu_sdk::credential::Credential cloned = credential;
+        qiniu_bindings::credential::Credential cloned = credential;
         EXPECT_EQ("abcdefghklmnopq", cloned.get_access_key());
         EXPECT_EQ("1234567890", cloned.get_secret_key());
     }
@@ -63,59 +63,59 @@ TEST_F(CredentialTest, CredentialTest)
 
 TEST_F(CredentialTest, GlobalCredentialProviderTest)
 {
-    qiniu_sdk::credential::Credential credential("global_ak", "global_sk");
-    qiniu_sdk::credential::GlobalCredentialProvider::setup(credential);
-    qiniu_sdk::credential::GlobalCredentialProvider gcp;
-    qiniu_sdk::credential::Credential c = gcp.get();
+    qiniu_bindings::credential::Credential credential("global_ak", "global_sk");
+    qiniu_bindings::credential::GlobalCredentialProvider::setup(credential);
+    qiniu_bindings::credential::GlobalCredentialProvider gcp;
+    qiniu_bindings::credential::Credential c = gcp.get();
     EXPECT_EQ("global_ak", c.get_access_key());
     EXPECT_EQ("global_sk", c.get_secret_key());
 }
 
 TEST_F(CredentialTest, EnvCredentialProviderTest)
 {
-    qiniu_sdk::credential::Credential credential("env_ak", "env_sk");
-    qiniu_sdk::credential::EnvCredentialProvider::setup(credential);
-    qiniu_sdk::credential::EnvCredentialProvider ecp;
-    qiniu_sdk::credential::Credential c = ecp.get();
+    qiniu_bindings::credential::Credential credential("env_ak", "env_sk");
+    qiniu_bindings::credential::EnvCredentialProvider::setup(credential);
+    qiniu_bindings::credential::EnvCredentialProvider ecp;
+    qiniu_bindings::credential::Credential c = ecp.get();
     EXPECT_EQ("env_ak", c.get_access_key());
     EXPECT_EQ("env_sk", c.get_secret_key());
 }
 
 TEST_F(CredentialTest, ChainCredentialsProviderTest)
 {
-    qiniu_sdk::credential::GlobalCredentialProvider gcp;
-    qiniu_sdk::credential::EnvCredentialProvider ecp;
-    qiniu_sdk::credential::Credential c("real_ak", "real_sk");
+    qiniu_bindings::credential::GlobalCredentialProvider gcp;
+    qiniu_bindings::credential::EnvCredentialProvider ecp;
+    qiniu_bindings::credential::Credential c("real_ak", "real_sk");
 
-    auto builder = qiniu_sdk::credential::ChainCredentialsProviderBuilder(std::move(gcp));
+    auto builder = qiniu_bindings::credential::ChainCredentialsProviderBuilder(std::move(gcp));
     builder.append_credential(std::move(ecp));
     builder.append_credential(std::move(c));
     auto chain = builder.build();
 
     {
-        qiniu_sdk::credential::Credential r = chain.get();
+        qiniu_bindings::credential::Credential r = chain.get();
         EXPECT_EQ("real_ak", r.get_access_key());
         EXPECT_EQ("real_sk", r.get_secret_key());
     }
 
     {
-        qiniu_sdk::credential::Credential new_env_cred("env_ak", "env_sk");
-        qiniu_sdk::credential::EnvCredentialProvider::setup(new_env_cred);
+        qiniu_bindings::credential::Credential new_env_cred("env_ak", "env_sk");
+        qiniu_bindings::credential::EnvCredentialProvider::setup(new_env_cred);
     }
 
     {
-        qiniu_sdk::credential::Credential r = chain.get();
+        qiniu_bindings::credential::Credential r = chain.get();
         EXPECT_EQ("env_ak", r.get_access_key());
         EXPECT_EQ("env_sk", r.get_secret_key());
     }
 
     {
-        qiniu_sdk::credential::Credential new_glb_cred("global_ak", "global_sk");
-        qiniu_sdk::credential::GlobalCredentialProvider::setup(new_glb_cred);
+        qiniu_bindings::credential::Credential new_glb_cred("global_ak", "global_sk");
+        qiniu_bindings::credential::GlobalCredentialProvider::setup(new_glb_cred);
     }
 
     {
-        qiniu_sdk::credential::Credential r = chain.get();
+        qiniu_bindings::credential::Credential r = chain.get();
         EXPECT_EQ("global_ak", r.get_access_key());
         EXPECT_EQ("global_sk", r.get_secret_key());
     }

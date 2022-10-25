@@ -1,10 +1,10 @@
-#include "includes/qiniu_sdk.h"
+#include "includes/qiniu_bindings.h"
 #include <array>
 #include <map>
 #include <vector>
 #include <iostream>
 
-namespace qiniu_sdk
+namespace qiniu_bindings
 {
     namespace utils
     {

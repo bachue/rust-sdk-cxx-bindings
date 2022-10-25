@@ -1,4 +1,4 @@
-SET(PROJECT_NAME qiniu_sdk_test)
+SET(PROJECT_NAME qiniu_bindings_test)
 PROJECT(${PROJECT_NAME} LANGUAGES CXX)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.13)
 SET(CMAKE_CXX_STANDARD 11)
@@ -18,8 +18,8 @@ AUX_SOURCE_DIRECTORY(. DIR_SRCS_TEST)
 ENABLE_TESTING()
 
 INCLUDE_DIRECTORIES(..)
-ADD_EXECUTABLE(qiniu_sdk_test ${DIR_SRCS_TEST})
-TARGET_LINK_LIBRARIES(qiniu_sdk_test PRIVATE GTest::gtest_main PRIVATE qiniu_sdk_static)
+ADD_EXECUTABLE(qiniu_bindings_test ${DIR_SRCS_TEST})
+TARGET_LINK_LIBRARIES(qiniu_bindings_test PRIVATE GTest::gtest_main PRIVATE qiniu_bindings_static)
 
 INCLUDE(GoogleTest)
-GTEST_DISCOVER_TESTS(qiniu_sdk_test)
+GTEST_DISCOVER_TESTS(qiniu_bindings_test)

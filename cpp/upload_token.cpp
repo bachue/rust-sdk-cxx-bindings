@@ -1,8 +1,8 @@
-#include "includes/qiniu_sdk.h"
+#include "includes/qiniu_bindings.h"
 #include <vector>
 #include <iostream>
 
-namespace qiniu_sdk
+namespace qiniu_bindings
 {
     namespace utils
     {

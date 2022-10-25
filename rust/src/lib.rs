@@ -53,7 +53,7 @@ pub use upload_token::{
     upload_policy_is_save_key_forced, upload_policy_is_string, UploadPolicy, UploadPolicyBuilder,
 };
 
-#[cxx::bridge(namespace = "qiniu_sdk::_internal::rust_sdk_ffi")]
+#[cxx::bridge(namespace = "qiniu_bindings::_internal::rust_sdk_ffi")]
 mod ffi {
     extern "Rust" {
         fn initialize_user_agent(cxx_compiler_info: &str);
@@ -246,7 +246,7 @@ mod ffi {
         fn upload_policy_get_object_lifetime(policy: &UploadPolicy) -> u64;
         fn upload_policy_as_json(policy: &UploadPolicy) -> String;
         fn upload_policy_from_json(json: &str) -> Result<Box<UploadPolicy>>;
-        unsafe fn upload_policy_get_string<'a>(policy: &'a UploadPolicy, key: &'a str) -> &str;
+        unsafe fn upload_policy_get_string<'a>(policy: &'a UploadPolicy, key: &'a str) -> &'a str;
         unsafe fn upload_policy_get_integer<'a>(policy: &'a UploadPolicy, key: &'a str) -> i64;
         unsafe fn upload_policy_get_bool<'a>(policy: &'a UploadPolicy, key: &'a str) -> bool;
         unsafe fn upload_policy_has_key<'a>(policy: &'a UploadPolicy, key: &'a str) -> bool;

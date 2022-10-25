@@ -2,7 +2,7 @@
 #include <memory>
 #include <iostream>
 
-namespace qiniu_sdk
+namespace qiniu_bindings
 {
     namespace _internal
     {

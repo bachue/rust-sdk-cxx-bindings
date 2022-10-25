@@ -278,7 +278,7 @@ pub fn upload_policy_from_json(json: &str) -> AnyResult<Box<UploadPolicy>> {
     )))
 }
 
-pub fn upload_policy_get_string<'a>(policy: &'a UploadPolicy, key: &'a str) -> &str {
+pub fn upload_policy_get_string<'a>(policy: &'a UploadPolicy, key: &'a str) -> &'a str {
     policy
         .0
         .get(key)

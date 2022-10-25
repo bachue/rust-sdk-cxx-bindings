@@ -1,9 +1,9 @@
 #include <memory>
 #include <stdexcept>
 #include <iostream>
-#include "includes/qiniu_sdk.h"
+#include "includes/qiniu_bindings.h"
 
-namespace qiniu_sdk
+namespace qiniu_bindings
 {
     namespace _internal
     {
