@@ -106,3 +106,40 @@ TEST(UploadTokenTest, UploadPolicyTest)
         EXPECT_TRUE(policy.get_as_bool("testBoolean"));
     }
 }
+
+TEST(UploadTokenTest, UploadTokenTest)
+{
+    {
+        auto upload_token = qiniu_bindings::upload_token::UploadTokenProvider("vHg2e7nOh7Jsucv2Azr5FH6omPgX22zoJRWa0FN5:GBmbhEcVu78YDkw86BWhjrF5lz4=:eyJkZWFkbGluZSI6MTY5ODMwODE3OSwic2NvcGUiOiJmYWtlYnVja2V0In0=");
+        EXPECT_EQ(upload_token.get_access_key(), "vHg2e7nOh7Jsucv2Azr5FH6omPgX22zoJRWa0FN5");
+        EXPECT_EQ(upload_token.get_bucket_name(), "fakebucket");
+        qiniu_bindings::upload_token::UploadPolicy upload_policy = upload_token.get_upload_policy();
+        EXPECT_EQ(upload_policy.bucket(), "fakebucket");
+        EXPECT_EQ(upload_policy.key(), "");
+        EXPECT_EQ(upload_policy.get_as_string("scope"), "fakebucket");
+    }
+    {
+        qiniu_bindings::credential::Credential credential("abcdefghklmnopq", "1234567890");
+        auto builder = qiniu_bindings::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
+        auto policy = builder.build();
+        auto upload_token = qiniu_bindings::upload_token::UploadTokenProvider(std::move(policy), std::move(credential));
+        EXPECT_EQ(upload_token.to_token_string().rfind("abcdefghklmnopq:", 0), 0);
+    }
+    {
+        qiniu_bindings::credential::Credential credential("abcdefghklmnopq", "1234567890");
+        auto upload_token = qiniu_bindings::upload_token::BucketUploadTokenProvider("test-bucket", std::chrono::hours(1), std::move(credential));
+        EXPECT_EQ(upload_token.to_token_string().rfind("abcdefghklmnopq:", 0), 0);
+        EXPECT_EQ(upload_token.get_access_key(), "abcdefghklmnopq");
+        EXPECT_EQ(upload_token.get_bucket_name(), "test-bucket");
+    }
+    {
+        qiniu_bindings::credential::Credential credential("abcdefghklmnopq", "1234567890");
+        auto upload_token = qiniu_bindings::upload_token::ObjectUploadTokenProvider("test-bucket", "test-object", std::chrono::hours(1), std::move(credential));
+        EXPECT_EQ(upload_token.to_token_string().rfind("abcdefghklmnopq:", 0), 0);
+        EXPECT_EQ(upload_token.get_access_key(), "abcdefghklmnopq");
+        EXPECT_EQ(upload_token.get_bucket_name(), "test-bucket");
+        qiniu_bindings::upload_token::UploadPolicy upload_policy = upload_token.get_upload_policy();
+        EXPECT_EQ(upload_policy.bucket(), "test-bucket");
+        EXPECT_EQ(upload_policy.key(), "test-object");
+    }
+}

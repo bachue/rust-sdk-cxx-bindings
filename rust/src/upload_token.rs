@@ -1,4 +1,6 @@
+use super::credential::CredentialProvider;
 use anyhow::Result as AnyResult;
+use qiniu_sdk::upload_token::UploadTokenProviderExt;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 #[derive(Clone, Debug)]
@@ -320,4 +322,155 @@ pub fn upload_policy_is_bool<'a>(policy: &'a UploadPolicy, key: &'a str) -> bool
         .get(key)
         .map(|v| v.is_boolean())
         .unwrap_or_default()
+}
+
+#[derive(Clone, Debug)]
+pub struct UploadTokenProvider(Box<dyn qiniu_sdk::upload_token::UploadTokenProvider>);
+
+#[derive(Clone, Debug)]
+pub struct GetAccessKeyOptions(qiniu_sdk::upload_token::GetAccessKeyOptions);
+
+#[derive(Clone, Debug)]
+pub struct GetPolicyOptions(qiniu_sdk::upload_token::GetPolicyOptions);
+
+#[derive(Clone, Debug)]
+pub struct ToUploadTokenStringOptions(qiniu_sdk::upload_token::ToStringOptions);
+
+#[derive(Clone, Debug)]
+pub struct GotUploadPolicy<'a>(qiniu_sdk::upload_token::GotUploadPolicy<'a>);
+
+pub fn new_get_access_key_options() -> Box<GetAccessKeyOptions> {
+    Box::new(GetAccessKeyOptions(Default::default()))
+}
+
+pub fn get_access_key_options_clone(options: &GetAccessKeyOptions) -> Box<GetAccessKeyOptions> {
+    Box::new(options.to_owned())
+}
+
+pub fn new_get_policy_options() -> Box<GetPolicyOptions> {
+    Box::new(GetPolicyOptions(Default::default()))
+}
+
+pub fn get_policy_options_clone(options: &GetPolicyOptions) -> Box<GetPolicyOptions> {
+    Box::new(options.to_owned())
+}
+
+pub fn new_to_upload_token_string_options() -> Box<ToUploadTokenStringOptions> {
+    Box::new(ToUploadTokenStringOptions(Default::default()))
+}
+
+pub fn to_upload_token_string_options_clone(
+    options: &ToUploadTokenStringOptions,
+) -> Box<ToUploadTokenStringOptions> {
+    Box::new(options.to_owned())
+}
+
+pub fn got_upload_policy_get_upload_policy(
+    got_upload_policy: &GotUploadPolicy,
+) -> Box<UploadPolicy> {
+    Box::new(UploadPolicy(got_upload_policy.0.upload_policy().to_owned()))
+}
+
+pub fn new_static_upload_token_provider(upload_token: &str) -> Box<UploadTokenProvider> {
+    Box::new(UploadTokenProvider(Box::new(
+        qiniu_sdk::upload_token::StaticUploadTokenProvider::new(upload_token),
+    )))
+}
+
+pub fn new_upload_token_provider_from_upload_policy(
+    upload_policy: Box<UploadPolicy>,
+    credential: Box<CredentialProvider>,
+) -> Box<UploadTokenProvider> {
+    Box::new(UploadTokenProvider(Box::new(
+        qiniu_sdk::upload_token::FromUploadPolicy::new(upload_policy.0, credential),
+    )))
+}
+
+pub fn upload_token_provider_clone(provider: &UploadTokenProvider) -> Box<UploadTokenProvider> {
+    Box::new(UploadTokenProvider(provider.0.to_owned()))
+}
+
+pub fn upload_token_provider_get_access_key(
+    provider: &UploadTokenProvider,
+    opts: &GetAccessKeyOptions,
+) -> AnyResult<String> {
+    Ok(provider
+        .0
+        .access_key(opts.0.to_owned())?
+        .into_access_key()
+        .to_string())
+}
+
+pub fn upload_token_provider_get_policy<'a>(
+    provider: &'a UploadTokenProvider,
+    opts: &'a GetPolicyOptions,
+) -> AnyResult<Box<GotUploadPolicy<'a>>> {
+    let got_policy = provider.0.policy(opts.0.to_owned())?;
+    Ok(Box::new(GotUploadPolicy(got_policy)))
+}
+
+pub fn upload_token_provider_to_token_string(
+    provider: &UploadTokenProvider,
+    opts: &ToUploadTokenStringOptions,
+) -> AnyResult<String> {
+    let token_string = provider.0.to_token_string(opts.0.to_owned())?;
+    Ok(token_string.into_owned())
+}
+
+pub fn upload_token_provider_get_bucket_name(
+    provider: &UploadTokenProvider,
+    opts: &GetPolicyOptions,
+) -> AnyResult<String> {
+    let bucket_name = provider.0.bucket_name(opts.0.to_owned())?;
+    Ok(bucket_name.to_string())
+}
+
+pub struct BucketUploadTokenProviderBuilder(
+    qiniu_sdk::upload_token::BucketUploadTokenProviderBuilder<CredentialProvider>,
+);
+
+pub fn new_bucket_upload_token_provider_builder(
+    bucket: &str,
+    upload_token_lifetime: u64,
+    provider: Box<CredentialProvider>,
+) -> Box<BucketUploadTokenProviderBuilder> {
+    Box::new(BucketUploadTokenProviderBuilder(
+        qiniu_sdk::upload_token::BucketUploadTokenProvider::builder(
+            bucket,
+            Duration::from_nanos(upload_token_lifetime),
+            *provider,
+        ),
+    ))
+}
+
+pub fn bucket_upload_token_provider_builder_build(
+    builder: Box<BucketUploadTokenProviderBuilder>,
+) -> Box<UploadTokenProvider> {
+    Box::new(UploadTokenProvider(Box::new(builder.0.build())))
+}
+
+pub struct ObjectUploadTokenProviderBuilder(
+    qiniu_sdk::upload_token::ObjectUploadTokenProviderBuilder<CredentialProvider>,
+);
+
+pub fn new_object_upload_token_provider_builder(
+    bucket: &str,
+    object: &str,
+    upload_token_lifetime: u64,
+    provider: Box<CredentialProvider>,
+) -> Box<ObjectUploadTokenProviderBuilder> {
+    Box::new(ObjectUploadTokenProviderBuilder(
+        qiniu_sdk::upload_token::ObjectUploadTokenProvider::builder(
+            bucket,
+            object,
+            Duration::from_nanos(upload_token_lifetime),
+            *provider,
+        ),
+    ))
+}
+
+pub fn object_upload_token_provider_builder_build(
+    builder: Box<ObjectUploadTokenProviderBuilder>,
+) -> Box<UploadTokenProvider> {
+    Box::new(UploadTokenProvider(Box::new(builder.0.build())))
 }

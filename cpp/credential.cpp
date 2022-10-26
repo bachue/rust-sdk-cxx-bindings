@@ -13,19 +13,23 @@ namespace qiniu_bindings
 
     namespace credential
     {
-        Credential::Credential(const std::string &access_key, const std::string &secret_key) noexcept : inner(_internal::rust_sdk_ffi::new_credential(rust::Str(access_key), rust::Str(secret_key)))
+        Credential::Credential(const std::string &access_key, const std::string &secret_key) noexcept
+            : inner(_internal::rust_sdk_ffi::new_credential(rust::Str(access_key), rust::Str(secret_key)))
         {
         }
 
-        Credential::Credential(const Credential &credential) noexcept : inner(_internal::rust_sdk_ffi::credential_clone(*credential))
+        Credential::Credential(const Credential &credential) noexcept
+            : inner(_internal::rust_sdk_ffi::credential_clone(*credential))
         {
         }
 
-        Credential::Credential(const GotCredential &credential) noexcept : inner(_internal::rust_sdk_ffi::got_credential_get_credential(*credential))
+        Credential::Credential(const GotCredential &credential) noexcept
+            : inner(_internal::rust_sdk_ffi::got_credential_get_credential(*credential))
         {
         }
 
-        Credential::Credential(rust::Box<_internal::rust_sdk_ffi::Credential> &&credential) noexcept : inner(std::move(credential))
+        Credential::Credential(rust::Box<_internal::rust_sdk_ffi::Credential> &&credential) noexcept
+            : inner(std::move(credential))
         {
         }
 
@@ -106,7 +110,8 @@ namespace qiniu_bindings
             return std::string(_internal::rust_sdk_ffi::credential_sign_download_url(*this->inner, url_str, lifetime.count()));
         }
 
-        GotCredential::GotCredential(rust::Box<_internal::rust_sdk_ffi::GotCredential> &&got_credential) noexcept : inner(std::move(got_credential))
+        GotCredential::GotCredential(rust::Box<_internal::rust_sdk_ffi::GotCredential> &&got_credential) noexcept
+            : inner(std::move(got_credential))
         {
         }
 
@@ -120,15 +125,18 @@ namespace qiniu_bindings
             return *this->inner;
         }
 
-        GetCredentialOptions::GetCredentialOptions() noexcept : inner(_internal::rust_sdk_ffi::new_get_credential_options())
+        GetCredentialOptions::GetCredentialOptions() noexcept
+            : inner(_internal::rust_sdk_ffi::new_get_credential_options())
         {
         }
 
-        GetCredentialOptions::GetCredentialOptions(const GetCredentialOptions &options) noexcept : inner(_internal::rust_sdk_ffi::get_credential_options_clone(*options.inner))
+        GetCredentialOptions::GetCredentialOptions(const GetCredentialOptions &options) noexcept
+            : inner(_internal::rust_sdk_ffi::get_credential_options_clone(*options.inner))
         {
         }
 
-        GetCredentialOptions::GetCredentialOptions(rust::Box<_internal::rust_sdk_ffi::GetCredentialOptions> &&options) noexcept : inner(std::move(options))
+        GetCredentialOptions::GetCredentialOptions(rust::Box<_internal::rust_sdk_ffi::GetCredentialOptions> &&options) noexcept
+            : inner(std::move(options))
         {
         }
 
@@ -142,15 +150,18 @@ namespace qiniu_bindings
             return *this->inner;
         }
 
-        CredentialProvider::CredentialProvider(Credential credential) noexcept : inner(_internal::rust_sdk_ffi::new_static_credential_provider(std::move(credential.inner)))
+        CredentialProvider::CredentialProvider(Credential &&credential) noexcept
+            : inner(_internal::rust_sdk_ffi::new_static_credential_provider(std::move(credential.inner)))
         {
         }
 
-        CredentialProvider::CredentialProvider(const CredentialProvider &provider) noexcept : inner(_internal::rust_sdk_ffi::credential_provider_clone(*provider.inner))
+        CredentialProvider::CredentialProvider(const CredentialProvider &provider) noexcept
+            : inner(_internal::rust_sdk_ffi::credential_provider_clone(*provider.inner))
         {
         }
 
-        CredentialProvider::CredentialProvider(rust::Box<_internal::rust_sdk_ffi::CredentialProvider> &&provider) noexcept : inner(std::move(provider))
+        CredentialProvider::CredentialProvider(rust::Box<_internal::rust_sdk_ffi::CredentialProvider> &&provider) noexcept
+            : inner(std::move(provider))
         {
         }
 
@@ -197,11 +208,13 @@ namespace qiniu_bindings
             _internal::rust_sdk_ffi::env_credential_provider_clear();
         }
 
-        ChainCredentialsProviderBuilder::ChainCredentialsProviderBuilder(CredentialProvider provider) noexcept : inner(_internal::rust_sdk_ffi::new_chain_credentials_provider_builder(std::move(provider.inner)))
+        ChainCredentialsProviderBuilder::ChainCredentialsProviderBuilder(CredentialProvider &&provider) noexcept
+            : inner(_internal::rust_sdk_ffi::new_chain_credentials_provider_builder(std::move(provider.inner)))
         {
         }
 
-        ChainCredentialsProviderBuilder::ChainCredentialsProviderBuilder(rust::Box<_internal::rust_sdk_ffi::ChainCredentialsProviderBuilder> &&provider) noexcept : inner(std::move(provider))
+        ChainCredentialsProviderBuilder::ChainCredentialsProviderBuilder(rust::Box<_internal::rust_sdk_ffi::ChainCredentialsProviderBuilder> &&provider) noexcept
+            : inner(std::move(provider))
         {
         }
 
@@ -215,12 +228,12 @@ namespace qiniu_bindings
             return *this->inner;
         }
 
-        void ChainCredentialsProviderBuilder::append_credential(CredentialProvider provider) noexcept
+        void ChainCredentialsProviderBuilder::append_credential(CredentialProvider &&provider) noexcept
         {
             _internal::rust_sdk_ffi::chain_credentials_provider_builder_append_credential(*this->inner, std::move(provider.inner));
         }
 
-        void ChainCredentialsProviderBuilder::prepend_credential(CredentialProvider provider) noexcept
+        void ChainCredentialsProviderBuilder::prepend_credential(CredentialProvider &&provider) noexcept
         {
             _internal::rust_sdk_ffi::chain_credentials_provider_builder_prepend_credential(*this->inner, std::move(provider.inner));
         }

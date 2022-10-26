@@ -71,6 +71,13 @@ namespace qiniu_bindings
         };
     }
 
+    namespace upload_token
+    {
+        class UploadTokenProvider;
+        class BucketUploadTokenProvider;
+        class ObjectUploadTokenProvider;
+    }
+
     /// @brief  七牛认证信息名字空间
     namespace credential
     {
@@ -188,9 +195,9 @@ namespace qiniu_bindings
         class GetCredentialOptions final
         {
         public:
-            /// @brief 构造认证信息的选项
+            /// @brief 构造获取认证信息的选项
             GetCredentialOptions() noexcept;
-            /// @brief 复制构造认证信息的选项
+            /// @brief 复制获取构造认证信息的选项
             GetCredentialOptions(const GetCredentialOptions &) noexcept;
             /// @private
             GetCredentialOptions(rust::Box<_internal::rust_sdk_ffi::GetCredentialOptions> &&options) noexcept;
@@ -211,7 +218,7 @@ namespace qiniu_bindings
             /// @brief 复制构造认证信息获取类
             CredentialProvider(const CredentialProvider &) noexcept;
             /// @brief 将认证信息转换为认证信息获取类
-            CredentialProvider(Credential credential) noexcept;
+            CredentialProvider(Credential &&credential) noexcept;
             /// @private
             CredentialProvider(rust::Box<_internal::rust_sdk_ffi::CredentialProvider> &&provider) noexcept;
             /// @private
@@ -225,6 +232,9 @@ namespace qiniu_bindings
         private:
             rust::Box<_internal::rust_sdk_ffi::CredentialProvider> inner;
             friend class ChainCredentialsProviderBuilder;
+            friend class upload_token::UploadTokenProvider;
+            friend class upload_token::BucketUploadTokenProvider;
+            friend class upload_token::ObjectUploadTokenProvider;
         };
 
         /// @brief 全局认证信息提供者，可以将认证信息配置在全局变量中。任何全局认证信息提供者实例都可以设置和访问全局认证信息。
@@ -265,7 +275,7 @@ namespace qiniu_bindings
             ChainCredentialsProviderBuilder() = delete;
             /// @brief 构造串联认证信息构建器
             /// @param provider 第一个认证信息提供者
-            ChainCredentialsProviderBuilder(CredentialProvider provider) noexcept;
+            ChainCredentialsProviderBuilder(CredentialProvider &&provider) noexcept;
             /// @private
             ChainCredentialsProviderBuilder(rust::Box<_internal::rust_sdk_ffi::ChainCredentialsProviderBuilder> &&provider) noexcept;
             /// @private
@@ -274,10 +284,10 @@ namespace qiniu_bindings
             _internal::rust_sdk_ffi::ChainCredentialsProviderBuilder &operator*() noexcept;
             /// @brief 将认证信息提供者推送到认证串末端
             /// @param provider 认证信息提供者
-            void append_credential(CredentialProvider provider) noexcept;
+            void append_credential(CredentialProvider &&provider) noexcept;
             /// @brief 将认证信息提供者推送到认证串顶端
             /// @param provider 认证信息提供者
-            void prepend_credential(CredentialProvider provider) noexcept;
+            void prepend_credential(CredentialProvider &&provider) noexcept;
             /// @brief 构造认证信息串提供者
             ChainCredentialsProvider build() noexcept;
 
@@ -300,6 +310,7 @@ namespace qiniu_bindings
     namespace upload_token
     {
         class UploadPolicy;
+        class GotUploadPolicy;
 
         const uint8_t STANDARD = 1;
         const uint8_t INFREQUENT_ACCESS = 2;
@@ -349,6 +360,7 @@ namespace qiniu_bindings
         public:
             UploadPolicy() = delete;
             UploadPolicy(const UploadPolicy &) noexcept;
+            UploadPolicy(const GotUploadPolicy &) noexcept;
             UploadPolicy(const UploadPolicyBuilder &) noexcept;
             /// @private
             UploadPolicy(rust::Box<_internal::rust_sdk_ffi::UploadPolicy> &&builder) noexcept;
@@ -387,6 +399,141 @@ namespace qiniu_bindings
 
         private:
             rust::Box<_internal::rust_sdk_ffi::UploadPolicy> inner;
+            friend class UploadTokenProvider;
+        };
+
+        /// @brief 获取 Access Key 的选项
+        class GetAccessKeyOptions final
+        {
+        public:
+            /// @brief 构造获取 Access Key 的选项
+            GetAccessKeyOptions() noexcept;
+            /// @brief 复制构造获取 Access Key 的选项
+            GetAccessKeyOptions(const GetAccessKeyOptions &) noexcept;
+            /// @private
+            GetAccessKeyOptions(rust::Box<_internal::rust_sdk_ffi::GetAccessKeyOptions> &&options) noexcept;
+            /// @private
+            const _internal::rust_sdk_ffi::GetAccessKeyOptions &operator*() const noexcept;
+            /// @private
+            _internal::rust_sdk_ffi::GetAccessKeyOptions &operator*() noexcept;
+
+        private:
+            rust::Box<_internal::rust_sdk_ffi::GetAccessKeyOptions> inner;
+        };
+
+        /// @brief 获取上传策略的选项
+        class GetPolicyOptions final
+        {
+        public:
+            /// @brief 构造获取上传策略的选项
+            GetPolicyOptions() noexcept;
+            /// @brief 复制构造获取上传策略的选项
+            GetPolicyOptions(const GetPolicyOptions &) noexcept;
+            /// @private
+            GetPolicyOptions(rust::Box<_internal::rust_sdk_ffi::GetPolicyOptions> &&options) noexcept;
+            /// @private
+            const _internal::rust_sdk_ffi::GetPolicyOptions &operator*() const noexcept;
+            /// @private
+            _internal::rust_sdk_ffi::GetPolicyOptions &operator*() noexcept;
+
+        private:
+            rust::Box<_internal::rust_sdk_ffi::GetPolicyOptions> inner;
+        };
+
+        /// @brief 转换为上传凭证字符串的选项
+        class ToUploadTokenStringOptions final
+        {
+        public:
+            /// @brief 构造转换为上传凭证字符串的选项
+            ToUploadTokenStringOptions() noexcept;
+            /// @brief 复制构造转换为上传凭证字符串的选项
+            ToUploadTokenStringOptions(const ToUploadTokenStringOptions &) noexcept;
+            /// @private
+            ToUploadTokenStringOptions(rust::Box<_internal::rust_sdk_ffi::ToUploadTokenStringOptions> &&options) noexcept;
+            /// @private
+            const _internal::rust_sdk_ffi::ToUploadTokenStringOptions &operator*() const noexcept;
+            /// @private
+            _internal::rust_sdk_ffi::ToUploadTokenStringOptions &operator*() noexcept;
+
+        private:
+            rust::Box<_internal::rust_sdk_ffi::ToUploadTokenStringOptions> inner;
+        };
+
+        /// @brief 获取的上传策略
+        /// @details 该数据结构目前和上传策略相同，可以转换为上传策略使用，但之后可能会添加更多字段
+        class GotUploadPolicy final
+        {
+        public:
+            /// @private
+            GotUploadPolicy(rust::Box<_internal::rust_sdk_ffi::GotUploadPolicy> &&got_upload_policy) noexcept;
+            /// @private
+            const _internal::rust_sdk_ffi::GotUploadPolicy &operator*() const noexcept;
+            /// @private
+            _internal::rust_sdk_ffi::GotUploadPolicy &operator*() noexcept;
+
+        private:
+            rust::Box<_internal::rust_sdk_ffi::GotUploadPolicy> inner;
+        };
+
+        /// @brief 上传凭证获取类
+        class UploadTokenProvider
+        {
+        public:
+            UploadTokenProvider() = delete;
+            /// @brief 复制构造上传凭证获取类
+            UploadTokenProvider(const UploadTokenProvider &) noexcept;
+            /// @brief 将上传策略转换为上传凭证获取类
+            UploadTokenProvider(UploadPolicy &&, credential::CredentialProvider &&) noexcept;
+            /// @brief 将上传凭证字符串转换为上传凭证获取类
+            UploadTokenProvider(const std::string &token) noexcept;
+            /// @private
+            UploadTokenProvider(rust::Box<_internal::rust_sdk_ffi::UploadTokenProvider> &&provider) noexcept;
+            /// @private
+            const _internal::rust_sdk_ffi::UploadTokenProvider &operator*() const noexcept;
+            /// @private
+            _internal::rust_sdk_ffi::UploadTokenProvider &operator*() noexcept;
+            /// @brief 从上传凭证内获取 AccessKey
+            /// @return AccessKey
+            virtual std::string get_access_key(const GetAccessKeyOptions &options = GetAccessKeyOptions()) const final;
+            /// @brief 从上传凭证内获取上传策略
+            /// @return 上传策略
+            virtual GotUploadPolicy get_upload_policy(const GetPolicyOptions &options = GetPolicyOptions()) const final;
+            /// @brief 转换为上传凭证字符串
+            /// @return 上传凭证字符串
+            virtual std::string to_token_string(const ToUploadTokenStringOptions &options = ToUploadTokenStringOptions()) const final;
+            /// @brief 从上传凭证内获取存储空间名称
+            /// @return 存储空间名称
+            virtual std::string get_bucket_name(const GetPolicyOptions &options = GetPolicyOptions()) const final;
+
+        private:
+            rust::Box<_internal::rust_sdk_ffi::UploadTokenProvider> inner;
+        };
+
+        /// @brief 基于存储空间的动态生成
+        /// @details 根据存储空间的快速生成上传凭证实例
+        class BucketUploadTokenProvider final : public UploadTokenProvider
+        {
+        public:
+            BucketUploadTokenProvider() = delete;
+            /// @brief 构造存储空间上传凭证
+            /// @param bucket 存储空间名称
+            /// @param lifetime 上传凭证有效期
+            /// @param credential 认证信息
+            BucketUploadTokenProvider(const std::string &bucket, const std::chrono::nanoseconds &lifetime, credential::CredentialProvider &&credential) noexcept;
+        };
+
+        /// @brief 基于对象的动态生成
+        /// @details 根据对象的快速生成上传凭证实例
+        class ObjectUploadTokenProvider final : public UploadTokenProvider
+        {
+        public:
+            ObjectUploadTokenProvider() = delete;
+            /// @brief 构造对象上传凭证
+            /// @param bucket 存储空间名称
+            /// @param object 对象名称
+            /// @param lifetime 上传凭证有效期
+            /// @param credential 认证信息
+            ObjectUploadTokenProvider(const std::string &bucket, const std::string &object, const std::chrono::nanoseconds &lifetime, credential::CredentialProvider &&credential) noexcept;
         };
     }
 

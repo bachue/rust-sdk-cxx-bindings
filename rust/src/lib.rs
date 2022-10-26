@@ -29,28 +29,38 @@ pub use credential::{
 
 mod upload_token;
 pub use upload_token::{
-    new_upload_policy_for_bucket, new_upload_policy_for_object,
-    new_upload_policy_for_objects_with_prefix, upload_policy_as_json, upload_policy_builder_build,
-    upload_policy_builder_clone, upload_policy_builder_disable_mime_detection,
-    upload_policy_builder_enable_mime_detection, upload_policy_builder_reset,
-    upload_policy_builder_set_bool, upload_policy_builder_set_callback,
-    upload_policy_builder_set_file_size_limitation, upload_policy_builder_set_file_type,
-    upload_policy_builder_set_insert_only, upload_policy_builder_set_integer,
-    upload_policy_builder_set_mime_types, upload_policy_builder_set_object_lifetime,
-    upload_policy_builder_set_return_body, upload_policy_builder_set_return_url,
-    upload_policy_builder_set_save_as, upload_policy_builder_set_string,
-    upload_policy_builder_set_token_deadline, upload_policy_builder_set_token_lifetime,
-    upload_policy_builder_unset, upload_policy_clone, upload_policy_from_json,
-    upload_policy_get_bool, upload_policy_get_bucket, upload_policy_get_callback_body,
-    upload_policy_get_callback_body_type, upload_policy_get_callback_host,
-    upload_policy_get_callback_urls, upload_policy_get_file_type, upload_policy_get_integer,
-    upload_policy_get_key, upload_policy_get_max_file_size, upload_policy_get_mime_types,
-    upload_policy_get_min_file_size, upload_policy_get_object_lifetime,
-    upload_policy_get_return_body, upload_policy_get_return_url, upload_policy_get_save_key,
-    upload_policy_get_string, upload_policy_get_token_deadline, upload_policy_has_key,
-    upload_policy_has_prefixal_object_key, upload_policy_is_bool, upload_policy_is_insert_only,
-    upload_policy_is_integer, upload_policy_is_mime_detection_enabled,
-    upload_policy_is_save_key_forced, upload_policy_is_string, UploadPolicy, UploadPolicyBuilder,
+    bucket_upload_token_provider_builder_build, get_access_key_options_clone,
+    get_policy_options_clone, got_upload_policy_get_upload_policy,
+    new_bucket_upload_token_provider_builder, new_get_access_key_options, new_get_policy_options,
+    new_object_upload_token_provider_builder, new_static_upload_token_provider,
+    new_to_upload_token_string_options, new_upload_policy_for_bucket, new_upload_policy_for_object,
+    new_upload_policy_for_objects_with_prefix, new_upload_token_provider_from_upload_policy,
+    object_upload_token_provider_builder_build, to_upload_token_string_options_clone,
+    upload_policy_as_json, upload_policy_builder_build, upload_policy_builder_clone,
+    upload_policy_builder_disable_mime_detection, upload_policy_builder_enable_mime_detection,
+    upload_policy_builder_reset, upload_policy_builder_set_bool,
+    upload_policy_builder_set_callback, upload_policy_builder_set_file_size_limitation,
+    upload_policy_builder_set_file_type, upload_policy_builder_set_insert_only,
+    upload_policy_builder_set_integer, upload_policy_builder_set_mime_types,
+    upload_policy_builder_set_object_lifetime, upload_policy_builder_set_return_body,
+    upload_policy_builder_set_return_url, upload_policy_builder_set_save_as,
+    upload_policy_builder_set_string, upload_policy_builder_set_token_deadline,
+    upload_policy_builder_set_token_lifetime, upload_policy_builder_unset, upload_policy_clone,
+    upload_policy_from_json, upload_policy_get_bool, upload_policy_get_bucket,
+    upload_policy_get_callback_body, upload_policy_get_callback_body_type,
+    upload_policy_get_callback_host, upload_policy_get_callback_urls, upload_policy_get_file_type,
+    upload_policy_get_integer, upload_policy_get_key, upload_policy_get_max_file_size,
+    upload_policy_get_mime_types, upload_policy_get_min_file_size,
+    upload_policy_get_object_lifetime, upload_policy_get_return_body, upload_policy_get_return_url,
+    upload_policy_get_save_key, upload_policy_get_string, upload_policy_get_token_deadline,
+    upload_policy_has_key, upload_policy_has_prefixal_object_key, upload_policy_is_bool,
+    upload_policy_is_insert_only, upload_policy_is_integer,
+    upload_policy_is_mime_detection_enabled, upload_policy_is_save_key_forced,
+    upload_policy_is_string, upload_token_provider_clone, upload_token_provider_get_access_key,
+    upload_token_provider_get_bucket_name, upload_token_provider_get_policy,
+    upload_token_provider_to_token_string, BucketUploadTokenProviderBuilder, GetAccessKeyOptions,
+    GetPolicyOptions, GotUploadPolicy, ObjectUploadTokenProviderBuilder,
+    ToUploadTokenStringOptions, UploadPolicy, UploadPolicyBuilder, UploadTokenProvider,
 };
 
 #[cxx::bridge(namespace = "qiniu_bindings::_internal::rust_sdk_ffi")]
@@ -134,6 +144,7 @@ mod ffi {
         fn new_env_credential_provider() -> Box<CredentialProvider>;
         fn env_credential_provider_setup(credential: &Credential);
         fn env_credential_provider_clear();
+
         type ChainCredentialsProviderBuilder;
         fn new_chain_credentials_provider_builder(
             provider: Box<CredentialProvider>,
@@ -253,6 +264,67 @@ mod ffi {
         unsafe fn upload_policy_is_string<'a>(policy: &'a UploadPolicy, key: &'a str) -> bool;
         unsafe fn upload_policy_is_integer<'a>(policy: &'a UploadPolicy, key: &'a str) -> bool;
         unsafe fn upload_policy_is_bool<'a>(policy: &'a UploadPolicy, key: &'a str) -> bool;
+
+        type UploadTokenProvider;
+        type GetAccessKeyOptions;
+        type GetPolicyOptions;
+        type ToUploadTokenStringOptions;
+        type GotUploadPolicy<'a>;
+
+        fn new_get_access_key_options() -> Box<GetAccessKeyOptions>;
+        fn get_access_key_options_clone(options: &GetAccessKeyOptions) -> Box<GetAccessKeyOptions>;
+        fn new_get_policy_options() -> Box<GetPolicyOptions>;
+        fn get_policy_options_clone(options: &GetPolicyOptions) -> Box<GetPolicyOptions>;
+        fn new_to_upload_token_string_options() -> Box<ToUploadTokenStringOptions>;
+        fn to_upload_token_string_options_clone(
+            options: &ToUploadTokenStringOptions,
+        ) -> Box<ToUploadTokenStringOptions>;
+        fn got_upload_policy_get_upload_policy(
+            got_upload_policy: &GotUploadPolicy,
+        ) -> Box<UploadPolicy>;
+        fn new_static_upload_token_provider(upload_token: &str) -> Box<UploadTokenProvider>;
+        fn new_upload_token_provider_from_upload_policy(
+            upload_policy: Box<UploadPolicy>,
+            credential: Box<CredentialProvider>,
+        ) -> Box<UploadTokenProvider>;
+        fn upload_token_provider_clone(provider: &UploadTokenProvider) -> Box<UploadTokenProvider>;
+        fn upload_token_provider_get_access_key(
+            provider: &UploadTokenProvider,
+            opts: &GetAccessKeyOptions,
+        ) -> Result<String>;
+        unsafe fn upload_token_provider_get_policy<'a>(
+            provider: &'a UploadTokenProvider,
+            opts: &'a GetPolicyOptions,
+        ) -> Result<Box<GotUploadPolicy<'a>>>;
+        fn upload_token_provider_to_token_string(
+            provider: &UploadTokenProvider,
+            opts: &ToUploadTokenStringOptions,
+        ) -> Result<String>;
+        fn upload_token_provider_get_bucket_name(
+            provider: &UploadTokenProvider,
+            opts: &GetPolicyOptions,
+        ) -> Result<String>;
+
+        type BucketUploadTokenProviderBuilder;
+        fn new_bucket_upload_token_provider_builder(
+            bucket: &str,
+            upload_token_lifetime: u64,
+            provider: Box<CredentialProvider>,
+        ) -> Box<BucketUploadTokenProviderBuilder>;
+        fn bucket_upload_token_provider_builder_build(
+            builder: Box<BucketUploadTokenProviderBuilder>,
+        ) -> Box<UploadTokenProvider>;
+
+        type ObjectUploadTokenProviderBuilder;
+        fn new_object_upload_token_provider_builder(
+            bucket: &str,
+            object: &str,
+            upload_token_lifetime: u64,
+            provider: Box<CredentialProvider>,
+        ) -> Box<ObjectUploadTokenProviderBuilder>;
+        fn object_upload_token_provider_builder_build(
+            builder: Box<ObjectUploadTokenProviderBuilder>,
+        ) -> Box<UploadTokenProvider>;
     }
 
     unsafe extern "C++" {

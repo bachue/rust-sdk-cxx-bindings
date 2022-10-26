@@ -13,11 +13,13 @@ namespace qiniu_bindings
     namespace upload_token
     {
 
-        UploadPolicyBuilder::UploadPolicyBuilder(const UploadPolicyBuilder &builder) noexcept : inner(_internal::rust_sdk_ffi::upload_policy_builder_clone(*builder.inner))
+        UploadPolicyBuilder::UploadPolicyBuilder(const UploadPolicyBuilder &builder) noexcept
+            : inner(_internal::rust_sdk_ffi::upload_policy_builder_clone(*builder.inner))
         {
         }
 
-        UploadPolicyBuilder::UploadPolicyBuilder(rust::Box<_internal::rust_sdk_ffi::UploadPolicyBuilder> &&builder) noexcept : inner(std::move(builder))
+        UploadPolicyBuilder::UploadPolicyBuilder(rust::Box<_internal::rust_sdk_ffi::UploadPolicyBuilder> &&builder) noexcept
+            : inner(std::move(builder))
         {
         }
 
@@ -163,15 +165,23 @@ namespace qiniu_bindings
             return UploadPolicy(*this);
         }
 
-        UploadPolicy::UploadPolicy(const UploadPolicy &policy) noexcept : inner(_internal::rust_sdk_ffi::upload_policy_clone(*policy))
+        UploadPolicy::UploadPolicy(const UploadPolicy &policy) noexcept
+            : inner(_internal::rust_sdk_ffi::upload_policy_clone(*policy))
         {
         }
 
-        UploadPolicy::UploadPolicy(const UploadPolicyBuilder &builder) noexcept : inner(_internal::rust_sdk_ffi::upload_policy_builder_build(*builder))
+        UploadPolicy::UploadPolicy(const GotUploadPolicy &policy) noexcept
+            : inner(_internal::rust_sdk_ffi::got_upload_policy_get_upload_policy(*policy))
         {
         }
 
-        UploadPolicy::UploadPolicy(rust::Box<_internal::rust_sdk_ffi::UploadPolicy> &&builder) noexcept : inner(std::move(builder))
+        UploadPolicy::UploadPolicy(const UploadPolicyBuilder &builder) noexcept
+            : inner(_internal::rust_sdk_ffi::upload_policy_builder_build(*builder))
+        {
+        }
+
+        UploadPolicy::UploadPolicy(rust::Box<_internal::rust_sdk_ffi::UploadPolicy> &&builder) noexcept
+            : inner(std::move(builder))
         {
         }
 
@@ -327,6 +337,158 @@ namespace qiniu_bindings
         bool UploadPolicy::is_bool(const std::string &key) const noexcept
         {
             return _internal::rust_sdk_ffi::upload_policy_is_bool(**this, key);
+        }
+
+        GetAccessKeyOptions::GetAccessKeyOptions() noexcept
+            : inner(_internal::rust_sdk_ffi::new_get_access_key_options())
+        {
+        }
+
+        GetAccessKeyOptions::GetAccessKeyOptions(const GetAccessKeyOptions &options) noexcept
+            : inner(_internal::rust_sdk_ffi::get_access_key_options_clone(*options.inner))
+        {
+        }
+
+        GetAccessKeyOptions::GetAccessKeyOptions(rust::Box<_internal::rust_sdk_ffi::GetAccessKeyOptions> &&options) noexcept
+            : inner(std::move(options))
+        {
+        }
+
+        const _internal::rust_sdk_ffi::GetAccessKeyOptions &GetAccessKeyOptions::operator*() const noexcept
+        {
+            return *this->inner;
+        }
+
+        _internal::rust_sdk_ffi::GetAccessKeyOptions &GetAccessKeyOptions::operator*() noexcept
+        {
+            return *this->inner;
+        }
+
+        GetPolicyOptions::GetPolicyOptions() noexcept
+            : inner(_internal::rust_sdk_ffi::new_get_policy_options())
+        {
+        }
+
+        GetPolicyOptions::GetPolicyOptions(const GetPolicyOptions &options) noexcept
+            : inner(_internal::rust_sdk_ffi::get_policy_options_clone(*options.inner))
+        {
+        }
+
+        GetPolicyOptions::GetPolicyOptions(rust::Box<_internal::rust_sdk_ffi::GetPolicyOptions> &&options) noexcept
+            : inner(std::move(options))
+        {
+        }
+
+        const _internal::rust_sdk_ffi::GetPolicyOptions &GetPolicyOptions::operator*() const noexcept
+        {
+            return *this->inner;
+        }
+
+        _internal::rust_sdk_ffi::GetPolicyOptions &GetPolicyOptions::operator*() noexcept
+        {
+            return *this->inner;
+        }
+
+        ToUploadTokenStringOptions::ToUploadTokenStringOptions() noexcept
+            : inner(_internal::rust_sdk_ffi::new_to_upload_token_string_options())
+        {
+        }
+
+        ToUploadTokenStringOptions::ToUploadTokenStringOptions(const ToUploadTokenStringOptions &options) noexcept
+            : inner(_internal::rust_sdk_ffi::to_upload_token_string_options_clone(*options.inner))
+        {
+        }
+
+        ToUploadTokenStringOptions::ToUploadTokenStringOptions(rust::Box<_internal::rust_sdk_ffi::ToUploadTokenStringOptions> &&options) noexcept
+            : inner(std::move(options))
+        {
+        }
+
+        const _internal::rust_sdk_ffi::ToUploadTokenStringOptions &ToUploadTokenStringOptions::operator*() const noexcept
+        {
+            return *this->inner;
+        }
+
+        _internal::rust_sdk_ffi::ToUploadTokenStringOptions &ToUploadTokenStringOptions::operator*() noexcept
+        {
+            return *this->inner;
+        }
+
+        GotUploadPolicy::GotUploadPolicy(rust::Box<_internal::rust_sdk_ffi::GotUploadPolicy> &&got_upload_policy) noexcept
+            : inner(std::move(got_upload_policy))
+        {
+        }
+
+        const _internal::rust_sdk_ffi::GotUploadPolicy &GotUploadPolicy::operator*() const noexcept
+        {
+            return *this->inner;
+        }
+
+        _internal::rust_sdk_ffi::GotUploadPolicy &GotUploadPolicy::operator*() noexcept
+        {
+            return *this->inner;
+        }
+
+        UploadTokenProvider::UploadTokenProvider(const std::string &token) noexcept
+            : inner(_internal::rust_sdk_ffi::new_static_upload_token_provider(token))
+        {
+        }
+
+        UploadTokenProvider::UploadTokenProvider(UploadPolicy &&upload_policy, credential::CredentialProvider &&credential_provider) noexcept
+            : inner(_internal::rust_sdk_ffi::new_upload_token_provider_from_upload_policy(std::move(upload_policy.inner), std::move(credential_provider.inner)))
+        {
+        }
+
+        UploadTokenProvider::UploadTokenProvider(const UploadTokenProvider &provider) noexcept
+            : inner(_internal::rust_sdk_ffi::upload_token_provider_clone(*provider.inner))
+        {
+        }
+
+        UploadTokenProvider::UploadTokenProvider(rust::Box<_internal::rust_sdk_ffi::UploadTokenProvider> &&provider) noexcept
+            : inner(std::move(provider))
+        {
+        }
+
+        const _internal::rust_sdk_ffi::UploadTokenProvider &UploadTokenProvider::operator*() const noexcept
+        {
+            return *this->inner;
+        }
+
+        _internal::rust_sdk_ffi::UploadTokenProvider &UploadTokenProvider::operator*() noexcept
+        {
+            return *this->inner;
+        }
+
+        std::string UploadTokenProvider::get_access_key(const GetAccessKeyOptions &options) const
+        {
+            return std::string(_internal::rust_sdk_ffi::upload_token_provider_get_access_key(*this->inner, *options));
+        }
+
+        GotUploadPolicy UploadTokenProvider::get_upload_policy(const GetPolicyOptions &options) const
+        {
+            return _internal::rust_sdk_ffi::upload_token_provider_get_policy(*this->inner, *options);
+        }
+
+        std::string UploadTokenProvider::to_token_string(const ToUploadTokenStringOptions &options) const
+        {
+            return std::string(_internal::rust_sdk_ffi::upload_token_provider_to_token_string(*this->inner, *options));
+        }
+
+        std::string UploadTokenProvider::get_bucket_name(const GetPolicyOptions &options) const
+        {
+            return std::string(_internal::rust_sdk_ffi::upload_token_provider_get_bucket_name(*this->inner, *options));
+        }
+
+        BucketUploadTokenProvider::BucketUploadTokenProvider(const std::string &bucket, const std::chrono::nanoseconds &lifetime, credential::CredentialProvider &&credential) noexcept
+            : UploadTokenProvider(_internal::rust_sdk_ffi::bucket_upload_token_provider_builder_build(
+                  _internal::rust_sdk_ffi::new_bucket_upload_token_provider_builder(bucket, lifetime.count(), std::move(credential.inner))))
+        {
+        }
+
+        ObjectUploadTokenProvider::ObjectUploadTokenProvider(const std::string &bucket, const std::string &object, const std::chrono::nanoseconds &lifetime, credential::CredentialProvider &&credential) noexcept
+            : UploadTokenProvider(_internal::rust_sdk_ffi::object_upload_token_provider_builder_build(
+                  _internal::rust_sdk_ffi::new_object_upload_token_provider_builder(bucket, object, lifetime.count(), std::move(credential.inner))))
+        {
         }
     }
 }

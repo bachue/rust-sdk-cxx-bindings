@@ -112,6 +112,15 @@ pub fn credential_sign_download_url(
 #[derive(Clone, Debug)]
 pub struct CredentialProvider(Box<dyn qiniu_sdk::credential::CredentialProvider>);
 
+impl qiniu_sdk::credential::CredentialProvider for CredentialProvider {
+    fn get(
+        &self,
+        opts: qiniu_sdk::credential::GetOptions,
+    ) -> IoResult<qiniu_sdk::credential::GotCredential> {
+        self.0.get(opts)
+    }
+}
+
 #[derive(Clone, Debug)]
 pub struct GetCredentialOptions(qiniu_sdk::credential::GetOptions);
 

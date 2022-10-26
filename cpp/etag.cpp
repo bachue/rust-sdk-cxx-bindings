@@ -18,7 +18,8 @@ namespace qiniu_bindings
         {
         }
 
-        EtagV1::EtagV1(EtagV1 &&other) noexcept : inner(std::move(other.inner))
+        EtagV1::EtagV1(EtagV1 &&other) noexcept
+            : inner(std::move(other.inner))
         {
         }
 
