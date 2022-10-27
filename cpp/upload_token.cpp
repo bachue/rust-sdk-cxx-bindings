@@ -96,7 +96,7 @@ namespace qiniu_bindings
             return *this;
         }
 
-        UploadPolicyBuilder &UploadPolicyBuilder::callback(const std::string *urls, const size_t urls_count, const std::string &host, const std::string &body, const std::string &body_type) noexcept
+        UploadPolicyBuilder &UploadPolicyBuilder::callback(const std::string *urls, const size_t urls_count, const std::string &body, const std::string &body_type, const std::string &host) noexcept
         {
             auto urls_vector = utils::from_rust_string_slice_to_rust_str_vector(urls, urls_count);
             auto urls_slice = rust::Slice<const rust::Str>(urls_vector.data(), urls_count);

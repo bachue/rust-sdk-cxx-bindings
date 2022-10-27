@@ -66,7 +66,7 @@ TEST(UploadTokenTest, UploadPolicyTest)
     {
         auto builder = qiniu_bindings::upload_token::UploadPolicyBuilder::new_for_object("test-bucket", "test-key", std::chrono::hours(1));
         std::array<std::string, 2> urls{"http://callback1.qiniu.com", "http://callback2.qiniu.com"};
-        builder.callback(urls.data(), urls.size(), "callback.qiniu.com", "name=$(fname)&size=$(fsize)", "application/x-www-form-urlencoded");
+        builder.callback(urls.data(), urls.size(), "name=$(fname)&size=$(fsize)", "application/x-www-form-urlencoded", "callback.qiniu.com");
         auto policy = builder.build();
         EXPECT_EQ(policy.bucket(), "test-bucket");
         EXPECT_EQ(policy.key(), "test-key");
