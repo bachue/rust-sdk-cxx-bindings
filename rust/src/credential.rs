@@ -4,6 +4,7 @@ use qiniu_sdk::http::{HeaderMap, HeaderName, HeaderValue, Method, Uri};
 use std::{io::Result as IoResult, time::Duration};
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct Credential(qiniu_sdk::credential::Credential);
 
 pub fn new_credential(access_key: &str, secret_key: &str) -> Box<Credential> {
@@ -110,6 +111,7 @@ pub fn credential_sign_download_url(
 }
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct CredentialProvider(Box<dyn qiniu_sdk::credential::CredentialProvider>);
 
 impl qiniu_sdk::credential::CredentialProvider for CredentialProvider {
@@ -122,9 +124,11 @@ impl qiniu_sdk::credential::CredentialProvider for CredentialProvider {
 }
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct GetCredentialOptions(qiniu_sdk::credential::GetOptions);
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct GotCredential(qiniu_sdk::credential::GotCredential);
 
 pub fn credential_provider_get(
@@ -188,6 +192,7 @@ pub fn env_credential_provider_clear() {
 }
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct ChainCredentialsProviderBuilder(
     Box<qiniu_sdk::credential::ChainCredentialsProviderBuilder>,
 );

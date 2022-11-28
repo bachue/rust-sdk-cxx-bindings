@@ -15,6 +15,7 @@ pub fn etag_to_buf(stream: *mut c_void, buf: *mut c_void) -> AnyResult<()> {
 }
 
 #[derive(Debug)]
+#[repr(transparent)]
 pub struct EtagV1(qiniu_sdk::etag::EtagV1);
 
 pub fn new_etag_v1() -> Box<EtagV1> {

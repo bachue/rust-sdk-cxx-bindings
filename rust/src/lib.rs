@@ -63,8 +63,64 @@ pub use upload_token::{
     ToUploadTokenStringOptions, UploadPolicy, UploadPolicyBuilder, UploadTokenProvider,
 };
 
+mod http;
+pub use http::{
+    http_request_body_get_size, http_request_builder_build, http_request_builder_reset,
+    http_request_builder_set_appended_user_agent, http_request_builder_set_body,
+    http_request_builder_set_header, http_request_builder_set_headers,
+    http_request_builder_set_method, http_request_builder_set_resolved_ip_addrs,
+    http_request_builder_set_url, http_request_builder_set_version, http_request_get_body,
+    http_request_get_parts, http_request_parts_builder_build,
+    http_request_parts_builder_build_with_body, http_request_parts_builder_set_appended_user_agent,
+    http_request_parts_builder_set_header, http_request_parts_builder_set_headers,
+    http_request_parts_builder_set_method, http_request_parts_builder_set_resolved_ip_addrs,
+    http_request_parts_builder_set_url, http_request_parts_builder_set_version,
+    http_request_parts_get_appended_user_agent, http_request_parts_get_header,
+    http_request_parts_get_header_keys, http_request_parts_get_method,
+    http_request_parts_get_resolved_ip_addrs, http_request_parts_get_url,
+    http_request_parts_get_user_agent, http_request_parts_get_version,
+    http_request_parts_set_appended_user_agent, http_request_parts_set_headers,
+    http_request_parts_set_method, http_request_parts_set_resolved_ip_addrs,
+    http_request_parts_set_url, http_request_parts_set_version, http_request_set_body,
+    http_request_set_parts, metrics_builder_set_connect_duration,
+    metrics_builder_set_name_lookup_duration, metrics_builder_set_redirect_duration,
+    metrics_builder_set_secure_connect_duration, metrics_builder_set_total_duration,
+    metrics_builder_set_transfer_duration, metrics_get_connect_duration,
+    metrics_get_name_lookup_duration, metrics_get_redirect_duration,
+    metrics_get_secure_connect_duration, metrics_get_total_duration, metrics_get_transfer_duration,
+    metrics_set_connect_duration, metrics_set_name_lookup_duration, metrics_set_redirect_duration,
+    metrics_set_secure_connect_duration, metrics_set_total_duration, metrics_set_transfer_duration,
+    new_http_request_body_default, new_http_request_body_from_bytes,
+    new_http_request_body_from_reader, new_http_request_builder, new_http_request_default,
+    new_http_request_parts_builder, new_metrics_builder, new_request_parts_default, HttpRequest,
+    HttpRequestBody, HttpRequestBuilder, HttpRequestParts, HttpRequestPartsBuilder, Metrics,
+    MetricsBuilder,
+};
+
 #[cxx::bridge(namespace = "qiniu_bindings::_internal::rust_sdk_ffi")]
 mod ffi {
+    #[derive(Debug, Clone)]
+    enum HttpVersion {
+        HTTP_VERSION_09,
+        HTTP_VERSION_10,
+        HTTP_VERSION_11,
+        HTTP_VERSION_2,
+        HTTP_VERSION_3,
+    }
+
+    #[derive(Debug, Clone)]
+    enum HttpMethod {
+        HTTP_METHOD_OPTIONS,
+        HTTP_METHOD_GET,
+        HTTP_METHOD_POST,
+        HTTP_METHOD_PUT,
+        HTTP_METHOD_DELETE,
+        HTTP_METHOD_HEAD,
+        HTTP_METHOD_TRACE,
+        HTTP_METHOD_CONNECT,
+        HTTP_METHOD_PATCH,
+    }
+
     extern "Rust" {
         fn initialize_user_agent(cxx_compiler_info: &str);
 
@@ -325,6 +381,150 @@ mod ffi {
         fn object_upload_token_provider_builder_build(
             builder: Box<ObjectUploadTokenProviderBuilder>,
         ) -> Box<UploadTokenProvider>;
+
+        // mod http
+
+        type HttpRequestParts<'r>;
+        type HttpRequestPartsBuilder<'r>;
+        unsafe fn new_http_request_parts_builder<'r>() -> Box<HttpRequestPartsBuilder<'r>>;
+        fn http_request_parts_builder_set_url(
+            builder: &mut HttpRequestPartsBuilder,
+            url: &str,
+        ) -> Result<()>;
+        fn http_request_parts_builder_set_version(
+            builder: &mut HttpRequestPartsBuilder,
+            version: HttpVersion,
+        );
+        fn http_request_parts_builder_set_method(
+            builder: &mut HttpRequestPartsBuilder,
+            method: HttpMethod,
+        );
+        fn http_request_parts_builder_set_headers(
+            builder: &mut HttpRequestPartsBuilder,
+            headers: &[[&str; 2]],
+        ) -> Result<()>;
+        fn http_request_parts_builder_set_header(
+            builder: &mut HttpRequestPartsBuilder,
+            name: &str,
+            value: &str,
+        ) -> Result<()>;
+        fn http_request_parts_builder_set_appended_user_agent(
+            builder: &mut HttpRequestPartsBuilder,
+            user_agent: &str,
+        );
+        fn http_request_parts_builder_set_resolved_ip_addrs(
+            builder: &mut HttpRequestPartsBuilder,
+            ips: &[&str],
+        ) -> Result<()>;
+        unsafe fn new_request_parts_default<'r>() -> Box<HttpRequestParts<'r>>;
+        unsafe fn http_request_parts_builder_build<'r>(
+            builder: &mut HttpRequestPartsBuilder<'r>,
+        ) -> Box<HttpRequestParts<'r>>;
+        unsafe fn http_request_parts_builder_build_with_body<'r>(
+            builder: &mut HttpRequestPartsBuilder<'r>,
+            body: Box<HttpRequestBody<'r>>,
+        ) -> Box<HttpRequest<'r>>;
+        fn http_request_parts_get_url(parts: &HttpRequestParts) -> String;
+        fn http_request_parts_set_url(parts: &mut HttpRequestParts, url: &str) -> Result<()>;
+        fn http_request_parts_get_version(parts: &HttpRequestParts) -> HttpVersion;
+        fn http_request_parts_set_version(parts: &mut HttpRequestParts, version: HttpVersion);
+        fn http_request_parts_get_method(parts: &HttpRequestParts) -> HttpMethod;
+        fn http_request_parts_set_method(parts: &mut HttpRequestParts, method: HttpMethod);
+        fn http_request_parts_get_header_keys(parts: &HttpRequestParts) -> Vec<String>;
+        unsafe fn http_request_parts_get_header<'v>(
+            parts: &'v HttpRequestParts,
+            key: &'v str,
+        ) -> Result<&'v str>;
+        fn http_request_parts_set_headers(
+            parts: &mut HttpRequestParts,
+            headers: &[[&str; 2]],
+        ) -> Result<()>;
+        fn http_request_parts_get_user_agent(parts: &HttpRequestParts) -> String;
+        fn http_request_parts_get_appended_user_agent(parts: &HttpRequestParts) -> String;
+        fn http_request_parts_set_appended_user_agent(
+            parts: &mut HttpRequestParts,
+            user_agent: &str,
+        );
+        fn http_request_parts_get_resolved_ip_addrs(parts: &HttpRequestParts) -> Vec<String>;
+        fn http_request_parts_set_resolved_ip_addrs(
+            parts: &mut HttpRequestParts,
+            resolved_ip_addrs: &[&str],
+        ) -> Result<()>;
+
+        type HttpRequestBody<'r>;
+        unsafe fn new_http_request_body_from_reader<'r>(
+            stream: *mut c_void,
+            size: u64,
+        ) -> Box<HttpRequestBody<'r>>;
+        unsafe fn new_http_request_body_from_bytes<'r>(bytes: &[u8]) -> Box<HttpRequestBody<'r>>;
+        unsafe fn new_http_request_body_default<'r>() -> Box<HttpRequestBody<'r>>;
+        fn http_request_body_get_size(body: &HttpRequestBody) -> u64;
+
+        type HttpRequestBuilder<'r>;
+        unsafe fn new_http_request_builder<'r>() -> Box<HttpRequestBuilder<'r>>;
+        fn http_request_builder_set_url(builder: &mut HttpRequestBuilder, url: &str) -> Result<()>;
+        fn http_request_builder_set_version(builder: &mut HttpRequestBuilder, version: HttpVersion);
+        fn http_request_builder_set_method(builder: &mut HttpRequestBuilder, method: HttpMethod);
+        fn http_request_builder_set_headers(
+            builder: &mut HttpRequestBuilder,
+            headers: &[[&str; 2]],
+        ) -> Result<()>;
+        fn http_request_builder_set_header(
+            builder: &mut HttpRequestBuilder,
+            name: &str,
+            value: &str,
+        ) -> Result<()>;
+        fn http_request_builder_set_appended_user_agent(
+            builder: &mut HttpRequestBuilder,
+            user_agent: &str,
+        );
+        fn http_request_builder_set_resolved_ip_addrs(
+            builder: &mut HttpRequestBuilder,
+            ips: &[&str],
+        ) -> Result<()>;
+        unsafe fn http_request_builder_set_body<'r>(
+            builder: &'r mut HttpRequestBuilder<'r>,
+            body: Box<HttpRequestBody<'r>>,
+        );
+        unsafe fn http_request_builder_build<'r>(
+            builder: &'r mut HttpRequestBuilder<'r>,
+        ) -> Box<HttpRequest<'r>>;
+        fn http_request_builder_reset(builder: &mut HttpRequestBuilder);
+
+        type HttpRequest<'r>;
+        unsafe fn new_http_request_default<'r>() -> Box<HttpRequestBody<'r>>;
+        unsafe fn http_request_get_body<'r>(req: &'r HttpRequest<'r>) -> &'r HttpRequestBody<'r>;
+        unsafe fn http_request_set_body<'r>(
+            req: &'r mut HttpRequest<'r>,
+            body: Box<HttpRequestBody<'r>>,
+        );
+        unsafe fn http_request_get_parts<'r>(req: &'r HttpRequest<'r>) -> &'r HttpRequestParts<'r>;
+        unsafe fn http_request_set_parts<'r>(
+            req: &'r mut HttpRequest<'r>,
+            parts: Box<HttpRequestParts<'r>>,
+        );
+
+        type Metrics;
+        type MetricsBuilder;
+        fn new_metrics_builder() -> Box<MetricsBuilder>;
+        fn metrics_get_total_duration(metrics: &Metrics) -> u64;
+        fn metrics_set_total_duration(metrics: &mut Metrics, duration: u64);
+        fn metrics_get_name_lookup_duration(metrics: &Metrics) -> u64;
+        fn metrics_set_name_lookup_duration(metrics: &mut Metrics, duration: u64);
+        fn metrics_get_connect_duration(metrics: &Metrics) -> u64;
+        fn metrics_set_connect_duration(metrics: &mut Metrics, duration: u64);
+        fn metrics_get_secure_connect_duration(metrics: &Metrics) -> u64;
+        fn metrics_set_secure_connect_duration(metrics: &mut Metrics, duration: u64);
+        fn metrics_get_redirect_duration(metrics: &Metrics) -> u64;
+        fn metrics_set_redirect_duration(metrics: &mut Metrics, duration: u64);
+        fn metrics_get_transfer_duration(metrics: &Metrics) -> u64;
+        fn metrics_set_transfer_duration(metrics: &mut Metrics, duration: u64);
+        fn metrics_builder_set_total_duration(builder: &mut MetricsBuilder, duration: u64);
+        fn metrics_builder_set_name_lookup_duration(builder: &mut MetricsBuilder, duration: u64);
+        fn metrics_builder_set_connect_duration(builder: &mut MetricsBuilder, duration: u64);
+        fn metrics_builder_set_secure_connect_duration(builder: &mut MetricsBuilder, duration: u64);
+        fn metrics_builder_set_redirect_duration(builder: &mut MetricsBuilder, duration: u64);
+        fn metrics_builder_set_transfer_duration(builder: &mut MetricsBuilder, duration: u64);
     }
 
     unsafe extern "C++" {

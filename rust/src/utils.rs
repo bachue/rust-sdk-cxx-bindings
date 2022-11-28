@@ -1,7 +1,8 @@
 use super::ffi::{c_void, new_seekable_reader};
 use cxx::UniquePtr;
-use std::io::{
-    Error as IoError, ErrorKind as IoErrorKind, Read, Result as IoResult, Seek, SeekFrom,
+use std::{
+    fmt::{self, Debug},
+    io::{Error as IoError, ErrorKind as IoErrorKind, Read, Result as IoResult, Seek, SeekFrom},
 };
 
 pub(crate) struct SeekableReader(UniquePtr<super::ffi::SeekableReader>);
@@ -9,6 +10,12 @@ pub(crate) struct SeekableReader(UniquePtr<super::ffi::SeekableReader>);
 impl SeekableReader {
     pub(crate) fn new(stream: *mut c_void) -> Self {
         Self(unsafe { new_seekable_reader(stream.cast()) })
+    }
+}
+
+impl Debug for SeekableReader {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_tuple("SeekableReader").finish()
     }
 }
 
@@ -40,6 +47,9 @@ impl Seek for SeekableReader {
             })
     }
 }
+
+unsafe impl Send for SeekableReader {}
+unsafe impl Sync for SeekableReader {}
 
 fn check_errbit(errbit: u8) -> IoResult<()> {
     if errbit > 0 {

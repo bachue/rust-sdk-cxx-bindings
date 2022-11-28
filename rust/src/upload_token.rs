@@ -4,9 +4,11 @@ use qiniu_sdk::upload_token::UploadTokenProviderExt;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct UploadPolicy(qiniu_sdk::upload_token::UploadPolicy);
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct UploadPolicyBuilder(qiniu_sdk::upload_token::UploadPolicyBuilder);
 
 pub fn new_upload_policy_for_bucket(bucket: &str, lifetime: u64) -> Box<UploadPolicyBuilder> {
@@ -325,18 +327,23 @@ pub fn upload_policy_is_bool<'a>(policy: &'a UploadPolicy, key: &'a str) -> bool
 }
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct UploadTokenProvider(Box<dyn qiniu_sdk::upload_token::UploadTokenProvider>);
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct GetAccessKeyOptions(qiniu_sdk::upload_token::GetAccessKeyOptions);
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct GetPolicyOptions(qiniu_sdk::upload_token::GetPolicyOptions);
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct ToUploadTokenStringOptions(qiniu_sdk::upload_token::ToStringOptions);
 
 #[derive(Clone, Debug)]
+#[repr(transparent)]
 pub struct GotUploadPolicy<'a>(qiniu_sdk::upload_token::GotUploadPolicy<'a>);
 
 pub fn new_get_access_key_options() -> Box<GetAccessKeyOptions> {
@@ -425,6 +432,7 @@ pub fn upload_token_provider_get_bucket_name(
     Ok(bucket_name.to_string())
 }
 
+#[repr(transparent)]
 pub struct BucketUploadTokenProviderBuilder(
     qiniu_sdk::upload_token::BucketUploadTokenProviderBuilder<CredentialProvider>,
 );
@@ -449,6 +457,7 @@ pub fn bucket_upload_token_provider_builder_build(
     Box::new(UploadTokenProvider(Box::new(builder.0.build())))
 }
 
+#[repr(transparent)]
 pub struct ObjectUploadTokenProviderBuilder(
     qiniu_sdk::upload_token::ObjectUploadTokenProviderBuilder<CredentialProvider>,
 );
